@@ -1,21 +1,28 @@
-from langgraph.prebuilt import create_react_agent
-from deepeval.integrations.langchain.callback import CallbackHandler
+import os
+import sys
+import tempfile
+from tests.test_integrations.utils import compare_trace_files
+from langgraph_app import execute_agent
 
 
-def get_weather(city: str) -> str:
-    """Returns the weather in a city"""
-    return f"It's always sunny in {city}!"
+def test_exec_agent_logs():
 
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    tmp_path = tmp.name
+    tmp.close()
 
-agent = create_react_agent(
-    model="openai:gpt-4o-mini",
-    tools=[get_weather],
-    prompt="You are a helpful assistant",
-)
-
-result = agent.invoke(
-    input={
-        "messages": [{"role": "user", "content": "what is the weather in sf"}]
-    },
-    config={"callbacks": [CallbackHandler()]},
-)
+    try:
+        original_argv = list(sys.argv)
+        sys.argv = [
+            "--deepeval-trace-mode=gen",
+            f"--deepeval-trace-file-name={tmp_path}",
+        ]
+        execute_agent()
+        sys.argv = original_argv
+        expected_path = os.path.join(
+            os.path.dirname(__file__), "langgraph_app.json"
+        )
+        compare_trace_files(expected_path, tmp_path)
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)

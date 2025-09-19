@@ -1,29 +1,24 @@
 from openai.types.chat.chat_completion import ChatCompletion
 from deepeval.key_handler import ModelKeyValues, KEY_FILE_HANDLER
 from typing import Optional, Tuple, Union, Dict
-from openai import OpenAI, AsyncOpenAI
 from pydantic import BaseModel
-import logging
-import openai
 
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    wait_exponential_jitter,
-    RetryCallState,
+from openai import (
+    OpenAI,
+    AsyncOpenAI,
 )
 
+from deepeval.constants import ProviderSlug as PS
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.models.llms.utils import trim_and_load_json
 from deepeval.models.utils import parse_model_name
+from deepeval.models.retry_policy import (
+    create_retry_decorator,
+    sdk_retries_for,
+)
 
 
-def log_retry_error(retry_state: RetryCallState):
-    exception = retry_state.outcome.exception()
-    logging.error(
-        f"OpenAI Error: {exception} Retrying: {retry_state.attempt_number} time(s)..."
-    )
-
+retry_openai = create_retry_decorator(PS.OPENAI)
 
 valid_gpt_models = [
     "gpt-3.5-turbo",
@@ -212,13 +207,6 @@ models_requiring_temperature_1 = [
     "gpt-5-chat-latest",
 ]
 
-retryable_exceptions = (
-    openai.RateLimitError,
-    openai.APIConnectionError,
-    openai.APITimeoutError,
-    openai.LengthFinishReasonError,
-)
-
 
 class GPTModel(DeepEvalBaseLLM):
     def __init__(
@@ -296,11 +284,7 @@ class GPTModel(DeepEvalBaseLLM):
     # Generate functions
     ###############################################
 
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
+    @retry_openai
     def generate(
         self, prompt: str, schema: Optional[BaseModel] = None
     ) -> Tuple[Union[str, Dict], float]:
@@ -359,11 +343,7 @@ class GPTModel(DeepEvalBaseLLM):
         else:
             return output, cost
 
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
+    @retry_openai
     async def a_generate(
         self, prompt: str, schema: Optional[BaseModel] = None
     ) -> Tuple[Union[str, BaseModel], float]:
@@ -427,11 +407,7 @@ class GPTModel(DeepEvalBaseLLM):
     # Other generate functions
     ###############################################
 
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
+    @retry_openai
     def generate_raw_response(
         self,
         prompt: str,
@@ -454,11 +430,7 @@ class GPTModel(DeepEvalBaseLLM):
 
         return completion, cost
 
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
+    @retry_openai
     async def a_generate_raw_response(
         self,
         prompt: str,
@@ -481,11 +453,7 @@ class GPTModel(DeepEvalBaseLLM):
 
         return completion, cost
 
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
+    @retry_openai
     def generate_samples(
         self, prompt: str, n: int, temperature: float
     ) -> Tuple[list[str], float]:
@@ -505,6 +473,7 @@ class GPTModel(DeepEvalBaseLLM):
     ###############################################
 
     def calculate_cost(self, input_tokens: int, output_tokens: int) -> float:
+        # TODO: consider loggin a warning instead of defaulting to whole model pricing
         pricing = model_pricing.get(self.model_name, model_pricing)
         input_cost = input_tokens * pricing["input"]
         output_cost = output_tokens * pricing["output"]
@@ -519,11 +488,31 @@ class GPTModel(DeepEvalBaseLLM):
 
     def load_model(self, async_mode: bool = False):
         if not async_mode:
-            return OpenAI(
-                api_key=self._openai_api_key,
-                base_url=self.base_url,
-                **self.kwargs,
-            )
-        return AsyncOpenAI(
-            api_key=self._openai_api_key, base_url=self.base_url, **self.kwargs
+            return self._build_client(OpenAI)
+        return self._build_client(AsyncOpenAI)
+
+    def _client_kwargs(self) -> Dict:
+        """
+        If Tenacity is managing retries, force OpenAI SDK retries off to avoid double retries.
+        If the user opts into SDK retries for 'openai' via DEEPEVAL_SDK_RETRY_PROVIDERS,
+        leave their retry settings as is.
+        """
+        kwargs = dict(self.kwargs or {})
+        if not sdk_retries_for(PS.OPENAI):
+            kwargs["max_retries"] = 0
+        return kwargs
+
+    def _build_client(self, cls):
+        kw = dict(
+            api_key=self._openai_api_key,
+            base_url=self.base_url,
+            **self._client_kwargs(),
         )
+        try:
+            return cls(**kw)
+        except TypeError as e:
+            # older OpenAI SDKs may not accept max_retries, in that case remove and retry once
+            if "max_retries" in str(e):
+                kw.pop("max_retries", None)
+                return cls(**kw)
+            raise
