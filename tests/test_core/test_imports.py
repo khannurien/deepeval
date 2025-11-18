@@ -22,10 +22,13 @@ def test_metrics_imports():
         MCPUseMetric,
         MCPTaskCompletionMetric,
         MultiTurnMCPUseMetric,
+        # Non-LLM metrics
+        JsonCorrectnessMetric,
+        ExactMatchMetric,
+        PatternMatchMetric,
         # Other metrics
         HallucinationMetric,
         SummarizationMetric,
-        JsonCorrectnessMetric,
         PromptAlignmentMetric,
         # Safety and compliance metrics
         BiasMetric,
@@ -38,6 +41,12 @@ def test_metrics_imports():
         ToolCorrectnessMetric,
         TaskCompletionMetric,
         ArgumentCorrectnessMetric,
+        GoalAccuracyMetric,
+        TopicAdherenceMetric,
+        PlanAdherenceMetric,
+        PlanQualityMetric,
+        ToolUseMetric,
+        StepEfficiencyMetric,
         # Conversational metrics
         TurnRelevancyMetric,
         ConversationCompletenessMetric,
@@ -79,6 +88,8 @@ def test_metrics_imports():
         MultiTurnMCPUseMetric,
         HallucinationMetric,
         BiasMetric,
+        ExactMatchMetric,
+        PatternMatchMetric,
         ToxicityMetric,
         SummarizationMetric,
         PIILeakageMetric,
@@ -91,6 +102,12 @@ def test_metrics_imports():
         PromptAlignmentMetric,
         TaskCompletionMetric,
         ArgumentCorrectnessMetric,
+        GoalAccuracyMetric,
+        TopicAdherenceMetric,
+        PlanAdherenceMetric,
+        PlanQualityMetric,
+        ToolUseMetric,
+        StepEfficiencyMetric,
         KnowledgeRetentionMetric,
         TurnRelevancyMetric,
         ConversationCompletenessMetric,
@@ -148,7 +165,7 @@ def test_conversational_dag_imports():
     assert ConversationalVerdictNode is not None
 
 
-def test_core_modules_import():
+def test_core_modules_import(unpatch_openai_after):
     """Test that core modules can be imported."""
     import deepeval
     import deepeval.metrics

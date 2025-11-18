@@ -8,6 +8,7 @@ from openai import (
     AsyncOpenAI,
 )
 
+from deepeval.config.settings import get_settings
 from deepeval.constants import ProviderSlug as PS
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.models.llms.utils import trim_and_load_json
@@ -70,6 +71,8 @@ unsupported_log_probs_gpt_models = [
     "o1-mini-2024-09-12",
     "o3-mini",
     "o3-mini-2025-01-31",
+    "o4-mini",
+    "o4-mini-2025-04-16",
     "gpt-4.5-preview-2025-02-27",
     "gpt-5",
     "gpt-5-2025-08-07",
@@ -204,8 +207,12 @@ models_requiring_temperature_1 = [
     "gpt-5-mini-2025-08-07",
     "gpt-5-nano",
     "gpt-5-nano-2025-08-07",
-    "gpt-5-chat-latest",
 ]
+
+
+def _request_timeout_seconds() -> float:
+    timeout = float(get_settings().DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS or 0)
+    return timeout if timeout > 0 else 30.0
 
 
 class GPTModel(DeepEvalBaseLLM):
@@ -386,7 +393,6 @@ class GPTModel(DeepEvalBaseLLM):
                 )
                 return schema.model_validate(json_output), cost
 
-        client: AsyncOpenAI
         completion = await client.chat.completions.create(
             model=self.model_name,
             messages=[{"role": "user", "content": prompt}],
@@ -500,9 +506,13 @@ class GPTModel(DeepEvalBaseLLM):
         kwargs = dict(self.kwargs or {})
         if not sdk_retries_for(PS.OPENAI):
             kwargs["max_retries"] = 0
+
+        if not kwargs.get("timeout"):
+            kwargs["timeout"] = _request_timeout_seconds()
         return kwargs
 
     def _build_client(self, cls):
+
         kw = dict(
             api_key=self._openai_api_key,
             base_url=self.base_url,

@@ -17,6 +17,7 @@ from deepeval.metrics.utils import (
 )
 from deepeval.metrics.pii_leakage.template import PIILeakageTemplate
 from deepeval.metrics.pii_leakage.schema import *
+from deepeval.metrics.api import metric_data_manager
 
 
 class PIILeakageMetric(BaseMetric):
@@ -35,7 +36,7 @@ class PIILeakageMetric(BaseMetric):
         verbose_mode: bool = False,
         evaluation_template: Type[PIILeakageTemplate] = PIILeakageTemplate,
     ):
-        self.threshold = 0 if strict_mode else threshold
+        self.threshold = 1 if strict_mode else threshold
         self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
         self.include_reason = include_reason
@@ -49,6 +50,7 @@ class PIILeakageMetric(BaseMetric):
         test_case: LLMTestCase,
         _show_indicator: bool = True,
         _in_component: bool = False,
+        _log_metric_to_confident: bool = True,
     ) -> float:
 
         check_llm_test_case_params(test_case, self._required_params, self)
@@ -64,6 +66,7 @@ class PIILeakageMetric(BaseMetric):
                         test_case,
                         _show_indicator=False,
                         _in_component=_in_component,
+                        _log_metric_to_confident=_log_metric_to_confident,
                     )
                 )
             else:
@@ -84,6 +87,10 @@ class PIILeakageMetric(BaseMetric):
                         f"Score: {self.score}\nReason: {self.reason}",
                     ],
                 )
+                if _log_metric_to_confident:
+                    metric_data_manager.post_metric_if_enabled(
+                        self, test_case=test_case
+                    )
 
             return self.score
 
@@ -92,6 +99,7 @@ class PIILeakageMetric(BaseMetric):
         test_case: LLMTestCase,
         _show_indicator: bool = True,
         _in_component: bool = False,
+        _log_metric_to_confident: bool = True,
     ) -> float:
 
         check_llm_test_case_params(test_case, self._required_params, self)
@@ -120,7 +128,10 @@ class PIILeakageMetric(BaseMetric):
                     f"Score: {self.score}\nReason: {self.reason}",
                 ],
             )
-
+            if _log_metric_to_confident:
+                metric_data_manager.post_metric_if_enabled(
+                    self, test_case=test_case
+                )
             return self.score
 
     async def _a_generate_reason(self) -> str:

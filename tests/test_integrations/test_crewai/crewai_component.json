@@ -1,0 +1,128 @@
+{
+  "uuid": "1562a590-36f8-49b8-b9dc-78ed3d9374c8",
+  "baseSpans": [
+    {
+      "uuid": "4d28ee1d-c192-4b63-a87e-53df0d87163f",
+      "name": "kickoff",
+      "status": "SUCCESS",
+      "type": "base",
+      "startTime": "2025-10-16T03:04:17.272Z",
+      "endTime": "2025-10-16T03:04:20.003Z",
+      "input": {
+        "city": "London"
+      },
+      "output": "The current weather in London is 60\u00b0F with rainy conditions and a humidity level of 80%.",
+      "metricCollection": "test_collection_1"
+    }
+  ],
+  "agentSpans": [
+    {
+      "uuid": "8b0f03a7-86d7-4bab-9cfe-637236d68ebb",
+      "name": "execute_task",
+      "status": "SUCCESS",
+      "type": "agent",
+      "parentUuid": "4d28ee1d-c192-4b63-a87e-53df0d87163f",
+      "startTime": "2025-10-16T03:04:17.275Z",
+      "endTime": "2025-10-16T03:04:20.000Z",
+      "input": "Get the current weather for London and provide a helpful summary.\n\nThis is the expected criteria for your final answer: A clear weather report including temperature, conditions, and humidity.\nyou MUST return the actual complete content as the final answer, not a summary.",
+      "output": "The current weather in London is 60\u00b0F with rainy conditions and a humidity level of 80%.",
+      "toolsCalled": [
+        {
+          "name": "get_weather",
+          "output": "Weather in London: 60\u00b0F, Rainy, Humidity: 80%",
+          "inputParameters": {
+            "output": "{\"city\": \"London\"}"
+          }
+        }
+      ],
+      "availableTools": [],
+      "agentHandoffs": [],
+      "metricCollection": "test_collection_1"
+    }
+  ],
+  "llmSpans": [
+    {
+      "uuid": "6e719174-ac31-4b10-9fba-4a765b6df1b6",
+      "name": "call",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "8b0f03a7-86d7-4bab-9cfe-637236d68ebb",
+      "startTime": "2025-10-16T03:04:18.822Z",
+      "endTime": "2025-10-16T03:04:19.997Z",
+      "input": [
+        {
+          "role": "system",
+          "content": "You are Weather Reporter. An experienced meteorologist who loves helping people plan their day with accurate weather reports.\nYour personal goal is: Provide accurate and helpful weather information to users.\nYou ONLY have access to the following tools, and should NEVER make up tools that are not listed here:\n\nTool Name: get_weather\nTool Arguments: {'city': {'description': None, 'type': 'str'}}\nTool Description: Fetch weather data for a given city. Returns temperature and conditions.\n\nIMPORTANT: Use the following format in your response:\n\n```\nThought: you should always think about what to do\nAction: the action to take, only one name of [get_weather], just the name, exactly as it's written.\nAction Input: the input to the action, just a simple JSON object, enclosed in curly braces, using \" to wrap keys and values.\nObservation: the result of the action\n```\n\nOnce all necessary information is gathered, return the following format:\n\n```\nThought: I now know the final answer\nFinal Answer: the final answer to the original input question\n```"
+        },
+        {
+          "role": "user",
+          "content": "\nCurrent Task: Get the current weather for London and provide a helpful summary.\n\nThis is the expected criteria for your final answer: A clear weather report including temperature, conditions, and humidity.\nyou MUST return the actual complete content as the final answer, not a summary.\n\nBegin! This is VERY important to you, use the tools available and give your best Final Answer, your job depends on it!\n\nThought:"
+        },
+        {
+          "role": "assistant",
+          "content": "I need to fetch the current weather data for London to provide an accurate report.\n\nAction: get_weather  \nAction Input: {\"city\":\"London\"}  \nObservation: Weather in London: 60\u00b0F, Rainy, Humidity: 80%"
+        }
+      ],
+      "output": "Thought: I now know the final answer  \nFinal Answer: The current weather in London is 60\u00b0F with rainy conditions and a humidity level of 80%.",
+      "model": "gpt-4o-mini",
+      "prompt": {},
+      "metricCollection": "test_collection_1"
+    },
+    {
+      "uuid": "cfa08bef-0f1c-4891-9783-4e3e76711b62",
+      "name": "call",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "8b0f03a7-86d7-4bab-9cfe-637236d68ebb",
+      "startTime": "2025-10-16T03:04:17.276Z",
+      "endTime": "2025-10-16T03:04:18.813Z",
+      "input": [
+        {
+          "role": "system",
+          "content": "You are Weather Reporter. An experienced meteorologist who loves helping people plan their day with accurate weather reports.\nYour personal goal is: Provide accurate and helpful weather information to users.\nYou ONLY have access to the following tools, and should NEVER make up tools that are not listed here:\n\nTool Name: get_weather\nTool Arguments: {'city': {'description': None, 'type': 'str'}}\nTool Description: Fetch weather data for a given city. Returns temperature and conditions.\n\nIMPORTANT: Use the following format in your response:\n\n```\nThought: you should always think about what to do\nAction: the action to take, only one name of [get_weather], just the name, exactly as it's written.\nAction Input: the input to the action, just a simple JSON object, enclosed in curly braces, using \" to wrap keys and values.\nObservation: the result of the action\n```\n\nOnce all necessary information is gathered, return the following format:\n\n```\nThought: I now know the final answer\nFinal Answer: the final answer to the original input question\n```"
+        },
+        {
+          "role": "user",
+          "content": "\nCurrent Task: Get the current weather for London and provide a helpful summary.\n\nThis is the expected criteria for your final answer: A clear weather report including temperature, conditions, and humidity.\nyou MUST return the actual complete content as the final answer, not a summary.\n\nBegin! This is VERY important to you, use the tools available and give your best Final Answer, your job depends on it!\n\nThought:"
+        }
+      ],
+      "output": "I need to fetch the current weather data for London to provide an accurate report.\n\nAction: get_weather  \nAction Input: {\"city\":\"London\"}  ",
+      "model": "gpt-4o-mini",
+      "prompt": {},
+      "metricCollection": "test_collection_1"
+    }
+  ],
+  "retrieverSpans": [],
+  "toolSpans": [
+    {
+      "uuid": "f52326ac-f2b4-4395-a453-2d6f8ca708d9",
+      "name": "get_weather",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "8b0f03a7-86d7-4bab-9cfe-637236d68ebb",
+      "startTime": "2025-10-16T03:04:18.814Z",
+      "endTime": "2025-10-16T03:04:18.817Z",
+      "input": "{\"city\": \"London\"}",
+      "output": "Weather in London: 60\u00b0F, Rainy, Humidity: 80%",
+      "metricCollection": "test_collection_1"
+    }
+  ],
+  "startTime": "2025-10-16T03:04:17.272Z",
+  "endTime": "2025-10-16T03:04:20.003Z",
+  "name": "crewai",
+  "metadata": {
+    "crewai": "crewai"
+  },
+  "tags": [
+    "crewai"
+  ],
+  "environment": "development",
+  "threadId": "crewai",
+  "userId": "crewai",
+  "input": {
+    "city": "London"
+  },
+  "output": "The current weather in London is 60\u00b0F with rainy conditions and a humidity level of 80%.",
+  "status": "SUCCESS",
+  "metricCollection": "test_collection_1"
+}

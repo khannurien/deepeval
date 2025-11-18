@@ -10,25 +10,80 @@ import asyncio
 import nest_asyncio
 import uuid
 import math
+import logging
 
 from contextvars import ContextVar
 from enum import Enum
-from typing import Any, Optional, Dict, List, Union
+from typing import Any, Dict, List, Optional, Protocol, Sequence, Union
 from collections.abc import Iterable
 from dataclasses import asdict, is_dataclass
 from pydantic import BaseModel
 from rich.progress import Progress
 from rich.console import Console, Theme
 
-from deepeval.confident.api import set_confident_api_key
-from deepeval.constants import CONFIDENT_OPEN_BROWSER
 from deepeval.config.settings import get_settings
 from deepeval.config.utils import (
-    parse_bool,
     get_env_bool,
-    bool_to_env_str,
     set_env_bool,
 )
+
+
+#####################
+# Pydantic Compat   #
+#####################
+
+import pydantic
+
+PYDANTIC_V2 = pydantic.VERSION.startswith("2")
+
+
+def make_model_config(**kwargs):
+    """
+    Create a model configuration that works with both Pydantic v1 and v2.
+
+    Usage in a model (Pydantic v2 style):
+        class MyModel(BaseModel):
+            model_config = make_model_config(arbitrary_types_allowed=True)
+            field: str
+
+    This will work correctly in both v1 and v2:
+    - In v2: Returns ConfigDict(**kwargs)
+    - In v1: Returns a Config class with the attributes set
+
+    Args:
+        **kwargs: Configuration options (e.g., use_enum_values=True, arbitrary_types_allowed=True)
+
+    Returns:
+        ConfigDict (v2) or Config class (v1)
+    """
+    if PYDANTIC_V2:
+        from pydantic import ConfigDict
+
+        return ConfigDict(**kwargs)
+    else:
+        # For Pydantic v1, create an inner Config class
+        class Config:
+            pass
+
+        for key, value in kwargs.items():
+            setattr(Config, key, value)
+        return Config
+
+
+###############
+# Local Types #
+###############
+
+
+class TurnLike(Protocol):
+    order: int
+    role: str
+    content: str
+    user_id: Optional[str]
+    retrieval_context: Optional[Sequence[str]]
+    tools_called: Optional[Sequence[Any]]
+    additional_metadata: Optional[Dict[str, Any]]
+    comments: Optional[str]
 
 
 def get_lcs(seq1, seq2):
@@ -218,6 +273,7 @@ def login(api_key: str):
         raise ValueError("Unable to login, please provide a non-empty api key.")
 
     from rich import print
+    from deepeval.confident.api import set_confident_api_key
 
     set_confident_api_key(api_key)
     print(
@@ -418,6 +474,142 @@ def normalize_text(text: str) -> str:
     return white_space_fix(remove_articles(remove_punc(lower(text))))
 
 
+def is_missing(s: Optional[str]) -> bool:
+    return s is None or (isinstance(s, str) and s.strip() == "")
+
+
+def len_tiny() -> int:
+    value = get_settings().DEEPEVAL_MAXLEN_TINY
+    return value if (isinstance(value, int) and value > 0) else 40
+
+
+def len_short() -> int:
+    value = get_settings().DEEPEVAL_MAXLEN_SHORT
+    return value if (isinstance(value, int) and value > 0) else 60
+
+
+def len_medium() -> int:
+    value = get_settings().DEEPEVAL_MAXLEN_MEDIUM
+    return value if (isinstance(value, int) and value > 0) else 120
+
+
+def len_long() -> int:
+    value = get_settings().DEEPEVAL_MAXLEN_LONG
+    return value if (isinstance(value, int) and value > 0) else 240
+
+
+def shorten(
+    text: Optional[object],
+    max_len: Optional[int] = None,
+    suffix: Optional[str] = None,
+) -> str:
+    """
+    Truncate text to max_len characters, appending `suffix` if truncated.
+    - Accepts None and returns "", or any object is returned as str().
+    - Safe when max_len <= len(suffix).
+    """
+    settings = get_settings()
+
+    if max_len is None:
+        max_len = (
+            settings.DEEPEVAL_SHORTEN_DEFAULT_MAXLEN
+            if settings.DEEPEVAL_SHORTEN_DEFAULT_MAXLEN is not None
+            else len_long()
+        )
+    if suffix is None:
+        suffix = (
+            settings.DEEPEVAL_SHORTEN_SUFFIX
+            if settings.DEEPEVAL_SHORTEN_SUFFIX is not None
+            else "..."
+        )
+
+    if text is None:
+        return ""
+    stext = str(text)
+    if max_len <= 0:
+        return ""
+    if len(stext) <= max_len:
+        return stext
+    cut = max_len - len(suffix)
+    if cut <= 0:
+        return suffix[:max_len]
+    return stext[:cut] + suffix
+
+
+def format_turn(
+    turn: TurnLike,
+    *,
+    content_length: Optional[int] = None,
+    max_context_items: Optional[int] = None,
+    context_length: Optional[int] = None,
+    meta_length: Optional[int] = None,
+    include_tools_in_header: bool = True,
+    include_order_role_in_header: bool = True,
+) -> str:
+    """
+    Build a multi-line, human-readable summary for a conversational turn.
+    Safe against missing fields and overly long content.
+    """
+    if content_length is None:
+        content_length = len_long()
+    if max_context_items is None:
+        max_context_items = 2
+    if context_length is None:
+        context_length = len_medium()
+    if meta_length is None:
+        meta_length = len_medium()
+
+    tools = turn.tools_called or []
+    tool_names = ", ".join(getattr(tc, "name", str(tc)) for tc in tools)
+    content = shorten(turn.content, content_length)
+
+    lines = []
+
+    if include_order_role_in_header:
+        header = f"{turn.order:>2}. {turn.role:<9} {content}"
+        if include_tools_in_header and tool_names:
+            header += f"  | tools: {tool_names}"
+        if turn.user_id:
+            header += f"  | user: {shorten(turn.user_id, len_tiny())}"
+        lines.append(header)
+        indent = "      "
+    else:
+        # No order or role prefix in this mode
+        # keep tools out of header as well.
+        first = content
+        if turn.user_id:
+            first += f"  | user: {shorten(turn.user_id, len_tiny())}"
+        lines.append(first)
+        indent = "      "  # ctx and meta indent
+
+    rctx = list(turn.retrieval_context or [])
+    if rctx:
+        show = rctx[:max_context_items]
+        for i, item in enumerate(show):
+            lines.append(f"{indent}↳ ctx[{i}]: {shorten(item, context_length)}")
+        hidden = max(0, len(rctx) - len(show))
+        if hidden:
+            lines.append(f"{indent}↳ ctx: (+{hidden} more)")
+
+    if turn.comments:
+        lines.append(
+            f"{indent}↳ comment: {shorten(str(turn.comments), meta_length)}"
+        )
+
+    meta = turn.additional_metadata or {}
+    if isinstance(meta, dict):
+        for k in list(meta.keys())[:3]:
+            if k in {"user_id", "userId"}:
+                continue
+            v = meta.get(k)
+            if v is not None:
+                lines.append(
+                    f"{indent}↳ meta.{k}: {shorten(str(v), meta_length)}"
+                )
+
+    return "\n".join(lines)
+
+
 ###############################################
 # Source: https://github.com/tingofurro/summac
 ###############################################
@@ -598,3 +790,27 @@ my_theme = Theme(
     }
 )
 custom_console = Console(theme=my_theme)
+
+
+def format_error_text(
+    exc: BaseException, *, with_stack: Optional[bool] = None
+) -> str:
+    if with_stack is None:
+        with_stack = logging.getLogger("deepeval").isEnabledFor(logging.DEBUG)
+
+    text = f"{type(exc).__name__}: {exc}"
+
+    if with_stack:
+        import traceback
+
+        text += "\n" + "".join(
+            traceback.format_exception(type(exc), exc, exc.__traceback__)
+        )
+    elif get_settings().DEEPEVAL_VERBOSE_MODE:
+        text += " (Run with LOG_LEVEL=DEBUG for stack trace.)"
+
+    return text
+
+
+def is_read_only_env():
+    return get_settings().DEEPEVAL_FILE_SYSTEM == "READ_ONLY"

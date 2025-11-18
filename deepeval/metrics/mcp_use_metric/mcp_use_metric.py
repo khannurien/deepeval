@@ -20,6 +20,7 @@ from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.indicator import metric_progress_indicator
 from .template import MCPUseMetricTemplate
 from .schema import MCPPrimitivesScore, MCPArgsScore
+from deepeval.metrics.api import metric_data_manager
 
 
 class MCPUseMetric(BaseMetric):
@@ -51,6 +52,7 @@ class MCPUseMetric(BaseMetric):
         test_case: LLMTestCase,
         _show_indicator: bool = True,
         _in_component: bool = False,
+        _log_metric_to_confident: bool = True,
     ) -> float:
         check_llm_test_case_params(test_case, self._required_params, self)
 
@@ -65,6 +67,7 @@ class MCPUseMetric(BaseMetric):
                         test_case,
                         _show_indicator=False,
                         _in_component=_in_component,
+                        _log_metric_to_confident=_log_metric_to_confident,
                     )
                 )
             else:
@@ -104,6 +107,10 @@ class MCPUseMetric(BaseMetric):
                     self,
                     steps=steps,
                 )
+                if _log_metric_to_confident:
+                    metric_data_manager.post_metric_if_enabled(
+                        self, test_case=test_case
+                    )
 
                 return self.score
 
@@ -112,6 +119,7 @@ class MCPUseMetric(BaseMetric):
         test_case: LLMTestCase,
         _show_indicator: bool = True,
         _in_component: bool = False,
+        _log_metric_to_confident: bool = True,
     ) -> float:
         check_llm_test_case_params(test_case, self._required_params, self)
 
@@ -154,7 +162,10 @@ class MCPUseMetric(BaseMetric):
                 self,
                 steps=steps,
             )
-
+            if _log_metric_to_confident:
+                metric_data_manager.post_metric_if_enabled(
+                    self, test_case=test_case
+                )
             return self.score
 
     def _get_primitives_used_score(
@@ -260,9 +271,10 @@ class MCPUseMetric(BaseMetric):
         primitives_used_score: MCPPrimitivesScore,
         argument_correctness_score: MCPArgsScore,
     ) -> float:
-        return min(
+        score = min(
             primitives_used_score.score, argument_correctness_score.score
         )
+        return 0 if self.strict_mode and score < self.threshold else score
 
     def _get_reason(
         self,
@@ -283,8 +295,9 @@ class MCPUseMetric(BaseMetric):
         mcp_resources_called: List[MCPResourceCall],
         mcp_prompts_called: List[MCPPromptCall],
     ) -> tuple[str, str]:
+        available_primitives = "MCP Primitives Available: \n"
         for mcp_server in mcp_servers:
-            available_primitives = f"MCP Server {mcp_server.server_name}\n"
+            available_primitives += f"MCP Server {mcp_server.server_name}\n"
             available_primitives += (
                 (
                     "\nAvailable Tools:\n[\n"

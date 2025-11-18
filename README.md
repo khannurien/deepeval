@@ -137,6 +137,8 @@ Let's pretend your LLM application is a RAG based customer support chatbot; here
 
 ## Installation
 
+Deepeval works with **Python>=3.9+**.
+
 ```
 pip install -U deepeval
 ```
@@ -307,7 +309,7 @@ for golden in dataset.goldens:
 
 @pytest.mark.parametrize(
     "test_case",
-    dataset,
+    dataset.test_cases,
 )
 def test_customer_chatbot(test_case: LLMTestCase):
     answer_relevancy_metric = AnswerRelevancyMetric(threshold=0.5)
@@ -387,6 +389,7 @@ Using `.env.local` or `.env` is optional. If they are missing, DeepEval uses you
 ```bash
 cp .env.example .env.local
 # then edit .env.local (ignored by git)
+```
 
 <br />
 
