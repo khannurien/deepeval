@@ -11,6 +11,16 @@ from deepeval.benchmarks.human_eval.template import HumanEvalTemplate
 from deepeval.telemetry import capture_benchmark_run
 
 
+def strip_code_fence(text):
+    start = text.find("```")
+    if start == -1:
+        return text
+    end = text.find("```", start + 3)
+    if end == -1:
+        return text
+    return text[start + 3:end].lstrip("python").lstrip()
+
+
 def secure_exec(code_str, global_vars=None, local_vars=None):
     """Securely execute code with restricted globals and locals."""
     if global_vars is None:
@@ -187,6 +197,8 @@ class HumanEval(DeepEvalBaseBenchmark):
             )
             c = 0
             for function in functions:
+                # Remove Markdown code fence from generated text
+                escaped_function = strip_code_fence(function)
                 try:
                     secure_exec(function)
                     secure_exec(golden.expected_output)
