@@ -200,10 +200,11 @@ class HumanEval(DeepEvalBaseBenchmark):
                 # Remove Markdown code fence from generated text
                 escaped_function = strip_code_fence(function)
                 try:
-                    secure_exec(function)
+                    secure_exec(escaped_function)
                     secure_exec(golden.expected_output)
                     c += 1
-                except AssertionError as e:
+                # except AssertionError as e:
+                except Exception as e:
                     pass
             self.c[task.value] = c
             self.functions[task.value] = functions
