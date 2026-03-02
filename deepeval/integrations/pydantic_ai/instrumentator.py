@@ -1,40 +1,63 @@
+from __future__ import annotations
+
 import json
 import logging
 import os
 from time import perf_counter
-from typing import Literal, Optional, List
+from typing import Any, List, Optional, TYPE_CHECKING
 
 from deepeval.config.settings import get_settings
 from deepeval.confident.api import get_confident_api_key
 from deepeval.metrics.base_metric import BaseMetric
 from deepeval.prompt import Prompt
 from deepeval.tracing.context import current_trace_context
-from deepeval.tracing.types import Trace
-from deepeval.tracing.otel.utils import to_hex_string
-from deepeval.tracing.tracing import trace_manager
-from deepeval.tracing.otel.utils import normalize_pydantic_ai_messages
 from deepeval.tracing.otel.exporter import ConfidentSpanExporter
-
+from deepeval.tracing.otel.test_exporter import test_exporter
+from deepeval.tracing.otel.utils import (
+    normalize_pydantic_ai_messages,
+    to_hex_string,
+)
+from deepeval.tracing.perf_epoch_bridge import init_clock_bridge
+from deepeval.tracing.tracing import trace_manager
+from deepeval.tracing.types import (
+    AgentSpan,
+    Trace,
+    TraceSpanStatus,
+    ToolCall,
+)
 
 logger = logging.getLogger(__name__)
-
+settings = get_settings()
 
 try:
-    from pydantic_ai.models.instrumented import InstrumentationSettings
-    from opentelemetry.sdk.trace import SpanProcessor, TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    # Optional dependencies
+    from opentelemetry.sdk.trace import (
+        ReadableSpan as _ReadableSpan,
+        SpanProcessor as _SpanProcessor,
+        TracerProvider,
+    )
+    from opentelemetry.sdk.trace.export import (
+        BatchSpanProcessor,
+        SimpleSpanProcessor,
+    )
     from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
         OTLPSpanExporter,
     )
-    from opentelemetry.sdk.trace import ReadableSpan
+    from opentelemetry.trace import set_tracer_provider
+    from pydantic_ai.models.instrumented import (
+        InstrumentationSettings as _BaseInstrumentationSettings,
+    )
 
     dependency_installed = True
 except ImportError as e:
-    if get_settings().DEEPEVAL_VERBOSE_MODE:
+    dependency_installed = False
+
+    # Preserve previous behavior: only log when verbose mode is enabled.
+    if settings.DEEPEVAL_VERBOSE_MODE:
         if isinstance(e, ModuleNotFoundError):
             logger.warning(
                 "Optional tracing dependency not installed: %s",
-                e.name,
+                getattr(e, "name", repr(e)),
                 stacklevel=2,
             )
         else:
@@ -43,29 +66,51 @@ except ImportError as e:
                 e,
                 stacklevel=2,
             )
-    dependency_installed = False
+
+    # Dummy fallbacks so imports and class definitions don't crash when
+    # optional deps are missing. Actual use is still guarded by
+    # is_dependency_installed().
+    class _BaseInstrumentationSettings:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
+
+    class _SpanProcessor:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
+
+        def on_start(self, span: Any, parent_context: Any) -> None:
+            pass
+
+        def on_end(self, span: Any) -> None:
+            pass
+
+    class _ReadableSpan:
+        pass
 
 
-def is_dependency_installed():
+def is_dependency_installed() -> bool:
     if not dependency_installed:
         raise ImportError(
-            "Dependencies are not installed. Please install it with `pip install pydantic-ai opentelemetry-sdk opentelemetry-exporter-otlp-proto-http`."
+            "Dependencies are not installed. Please install it with "
+            "`pip install pydantic-ai opentelemetry-sdk "
+            "opentelemetry-exporter-otlp-proto-http`."
         )
     return True
 
 
-from deepeval.tracing.types import AgentSpan
-from deepeval.confident.api import get_confident_api_key
-from deepeval.prompt import Prompt
-from deepeval.tracing.otel.test_exporter import test_exporter
-from deepeval.tracing.context import current_trace_context
-from deepeval.tracing.types import Trace
-from deepeval.tracing.otel.utils import to_hex_string
-from deepeval.tracing.types import TraceSpanStatus, ToolCall
-from deepeval.tracing.perf_epoch_bridge import init_clock_bridge
+if TYPE_CHECKING:
+    # For type checkers, use real types
+    from opentelemetry.sdk.trace import ReadableSpan, SpanProcessor
+    from pydantic_ai.models.instrumented import InstrumentationSettings
+else:
+    # At runtime we always have something to subclass / annotate with
+    InstrumentationSettings = _BaseInstrumentationSettings
+    SpanProcessor = _SpanProcessor
+    ReadableSpan = _ReadableSpan
 
 # OTLP_ENDPOINT = "http://127.0.0.1:4318/v1/traces"
-OTLP_ENDPOINT = "https://otel.confident-ai.com/v1/traces"
+# OTLP_ENDPOINT = "https://otel.confident-ai.com/v1/traces"
+OTLP_ENDPOINT = str(settings.CONFIDENT_OTEL_URL) + "v1/traces"
 init_clock_bridge()  # initialize clock bridge for perf_counter() to epoch_nanos conversion
 
 
@@ -90,7 +135,12 @@ class ConfidentInstrumentationSettings(InstrumentationSettings):
     ):
         is_dependency_installed()
 
-        _environment = os.getenv("CONFIDENT_TRACE_ENVIRONMENT", "development")
+        if trace_manager.environment is not None:
+            _environment = trace_manager.environment
+        elif settings.CONFIDENT_TRACE_ENVIRONMENT is not None:
+            _environment = settings.CONFIDENT_TRACE_ENVIRONMENT
+        else:
+            _environment = "development"
         if _environment and _environment in [
             "production",
             "staging",
@@ -125,7 +175,9 @@ class ConfidentInstrumentationSettings(InstrumentationSettings):
         trace_provider.add_span_processor(span_interceptor)
 
         if is_test_mode:
-            trace_provider.add_span_processor(BatchSpanProcessor(test_exporter))
+            trace_provider.add_span_processor(
+                SimpleSpanProcessor(ConfidentSpanExporter())
+            )
         else:
             trace_provider.add_span_processor(
                 BatchSpanProcessor(
@@ -135,6 +187,12 @@ class ConfidentInstrumentationSettings(InstrumentationSettings):
                     )
                 )
             )
+        try:
+            set_tracer_provider(trace_provider)
+        except Exception as e:
+            # Handle case where provider is already set (optional warning)
+            logger.warning(f"Could not set global tracer provider: {e}")
+
         super().__init__(tracer_provider=trace_provider)
 
 
@@ -176,14 +234,23 @@ class SpanInterceptor(SpanProcessor):
             span.set_attribute("confident.trace.name", self.settings.name)
         if self.settings.confident_prompt:
             span.set_attribute(
-                "confident.span.prompt",
-                json.dumps(
-                    {
-                        "alias": self.settings.confident_prompt.alias,
-                        "version": self.settings.confident_prompt.version,
-                    }
-                ),
+                "confident.span.prompt_alias",
+                self.settings.confident_prompt.alias,
             )
+            span.set_attribute(
+                "confident.span.prompt_commit_hash",
+                self.settings.confident_prompt.hash,
+            )
+            if self.settings.confident_prompt.version:
+                span.set_attribute(
+                    "confident.span.prompt_label",
+                    self.settings.confident_prompt.label,
+                )
+            if self.settings.confident_prompt.version:
+                span.set_attribute(
+                    "confident.span.prompt_version",
+                    self.settings.confident_prompt.version,
+                )
 
         # set trace metric collection
         if self.settings.trace_metric_collection:
@@ -193,16 +260,14 @@ class SpanInterceptor(SpanProcessor):
             )
 
         # set agent name and metric collection
-        if span.attributes.get("agent_name"):
-            span.set_attribute("confident.span.type", "agent")
-            span.set_attribute(
-                "confident.span.name", span.attributes.get("agent_name")
-            )
-            if self.settings.agent_metric_collection:
-                span.set_attribute(
-                    "confident.span.metric_collection",
-                    self.settings.agent_metric_collection,
-                )
+        agent_name = (
+            span.attributes.get("gen_ai.agent.name")
+            or span.attributes.get("pydantic_ai.agent.name")
+            or span.attributes.get("agent_name")
+        )
+
+        if agent_name:
+            self._add_agent_span(span, agent_name)
 
         # set llm metric collection
         if span.attributes.get("gen_ai.operation.name") in [
@@ -229,6 +294,19 @@ class SpanInterceptor(SpanProcessor):
                 )
 
     def on_end(self, span):
+
+        already_processed = (
+            span.attributes.get("confident.span.type") == "agent"
+        )
+        if not already_processed:
+            agent_name = (
+                span.attributes.get("gen_ai.agent.name")
+                or span.attributes.get("pydantic_ai.agent.name")
+                or span.attributes.get("agent_name")
+            )
+            if agent_name:
+                self._add_agent_span(span, agent_name)
+
         if self.settings.is_test_mode:
             if span.attributes.get("confident.span.type") == "agent":
 
@@ -281,4 +359,12 @@ class SpanInterceptor(SpanProcessor):
                 trace.status = TraceSpanStatus.SUCCESS
                 trace.end_time = perf_counter()
                 trace_manager.traces_to_evaluate.append(trace)
-                test_exporter.clear_span_json_list()
+
+    def _add_agent_span(self, span, name):
+        span.set_attribute("confident.span.type", "agent")
+        span.set_attribute("confident.span.name", name)
+        if self.settings.agent_metric_collection:
+            span.set_attribute(
+                "confident.span.metric_collection",
+                self.settings.agent_metric_collection,
+            )

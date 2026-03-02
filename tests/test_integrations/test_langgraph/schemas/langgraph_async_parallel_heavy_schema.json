@@ -1,0 +1,2696 @@
+{
+  "uuid": "73e41697-6ca9-4343-bb16-ac3db33027f6",
+  "baseSpans": [
+    {
+      "uuid": "019c017d-c015-73f0-87cd-908ff4b8db79",
+      "name": "LangGraph",
+      "status": "SUCCESS",
+      "type": "base",
+      "startTime": "2026-01-27T22:05:44.342Z",
+      "endTime": "2026-01-27T22:05:59.713Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 390,
+                "prompt_tokens": 377,
+                "total_tokens": 767,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 192,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+            "tool_calls": [
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Tokyo"
+                },
+                "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "New York"
+                },
+                "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "London"
+                },
+                "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Paris"
+                },
+                "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Sydney"
+                },
+                "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "AAPL"
+                },
+                "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "GOOGL"
+                },
+                "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "MSFT"
+                },
+                "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.92"
+                },
+                "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.79"
+                },
+                "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "0.15*378.90"
+                },
+                "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 377,
+              "output_tokens": 390,
+              "total_tokens": 767,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 192
+              }
+            }
+          },
+          {
+            "content": "Sunny, 72\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+            "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+            "status": "success"
+          },
+          {
+            "content": "Cloudy, 58\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+            "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+            "status": "success"
+          },
+          {
+            "content": "Rainy, 52\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "f7836df3-845e-409c-94e4-3037063d3594",
+            "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+            "status": "success"
+          },
+          {
+            "content": "Partly cloudy, 65\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+            "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+            "status": "success"
+          },
+          {
+            "content": "Clear, 78\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+            "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+            "status": "success"
+          },
+          {
+            "content": "$178.50",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+            "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+            "status": "success"
+          },
+          {
+            "content": "$142.30",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+            "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+            "status": "success"
+          },
+          {
+            "content": "$378.90",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+            "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+            "status": "success"
+          },
+          {
+            "content": "1/0.92 = 1.0869565217391304",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+            "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+            "status": "success"
+          },
+          {
+            "content": "1/0.79 = 1.2658227848101264",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+            "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+            "status": "success"
+          },
+          {
+            "content": "0.15*378.90 = 56.834999999999994",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+            "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+            "status": "success"
+          },
+          {
+            "content": "I ran the requested calls. Brief summary:\n\nWeather\n- Tokyo: Sunny, 72\u00b0F\n- New York: Cloudy, 58\u00b0F\n- London: Rainy, 52\u00b0F\n- Paris: Partly cloudy, 65\u00b0F\n- Sydney: Clear, 78\u00b0F\n\nStock prices\n- AAPL: $178.50\n- GOOGL: $142.30\n- MSFT: $378.90\n\nCalculations\n- 1 / 0.92 \u2248 1.08696\n- 1 / 0.79 \u2248 1.26582\n- 0.15 * 378.90 = 56.835\n\nIf you want any of these expanded (e.g., more precise numbers, different cities, or historical stock info), I can fetch that next.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 501,
+                "prompt_tokens": 708,
+                "total_tokens": 1209,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 320,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTzc1d6SnoGPyTaQjmw5ddA1q1x",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-da79-79e0-a624-af9feaaaf33f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 708,
+              "output_tokens": 501,
+              "total_tokens": 1209,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 320
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019c017d-da77-7ac2-b240-34d6280baa58",
+      "name": "agent",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019c017d-c015-73f0-87cd-908ff4b8db79",
+      "startTime": "2026-01-27T22:05:51.096Z",
+      "endTime": "2026-01-27T22:05:59.711Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 390,
+                "prompt_tokens": 377,
+                "total_tokens": 767,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 192,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+            "tool_calls": [
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Tokyo"
+                },
+                "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "New York"
+                },
+                "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "London"
+                },
+                "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Paris"
+                },
+                "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Sydney"
+                },
+                "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "AAPL"
+                },
+                "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "GOOGL"
+                },
+                "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "MSFT"
+                },
+                "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.92"
+                },
+                "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.79"
+                },
+                "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "0.15*378.90"
+                },
+                "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 377,
+              "output_tokens": 390,
+              "total_tokens": 767,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 192
+              }
+            }
+          },
+          {
+            "content": "Sunny, 72\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+            "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+            "status": "success"
+          },
+          {
+            "content": "Cloudy, 58\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+            "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+            "status": "success"
+          },
+          {
+            "content": "Rainy, 52\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "f7836df3-845e-409c-94e4-3037063d3594",
+            "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+            "status": "success"
+          },
+          {
+            "content": "Partly cloudy, 65\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+            "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+            "status": "success"
+          },
+          {
+            "content": "Clear, 78\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+            "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+            "status": "success"
+          },
+          {
+            "content": "$178.50",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+            "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+            "status": "success"
+          },
+          {
+            "content": "$142.30",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+            "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+            "status": "success"
+          },
+          {
+            "content": "$378.90",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+            "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+            "status": "success"
+          },
+          {
+            "content": "1/0.92 = 1.0869565217391304",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+            "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+            "status": "success"
+          },
+          {
+            "content": "1/0.79 = 1.2658227848101264",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+            "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+            "status": "success"
+          },
+          {
+            "content": "0.15*378.90 = 56.834999999999994",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+            "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+            "status": "success"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "I ran the requested calls. Brief summary:\n\nWeather\n- Tokyo: Sunny, 72\u00b0F\n- New York: Cloudy, 58\u00b0F\n- London: Rainy, 52\u00b0F\n- Paris: Partly cloudy, 65\u00b0F\n- Sydney: Clear, 78\u00b0F\n\nStock prices\n- AAPL: $178.50\n- GOOGL: $142.30\n- MSFT: $378.90\n\nCalculations\n- 1 / 0.92 \u2248 1.08696\n- 1 / 0.79 \u2248 1.26582\n- 0.15 * 378.90 = 56.835\n\nIf you want any of these expanded (e.g., more precise numbers, different cities, or historical stock info), I can fetch that next.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 501,
+                "prompt_tokens": 708,
+                "total_tokens": 1209,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 320,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTzc1d6SnoGPyTaQjmw5ddA1q1x",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-da79-79e0-a624-af9feaaaf33f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 708,
+              "output_tokens": 501,
+              "total_tokens": 1209,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 320
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019c017d-fc1d-7ab3-a537-a994c8576afd",
+      "name": "should_continue",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019c017d-da77-7ac2-b240-34d6280baa58",
+      "startTime": "2026-01-27T22:05:59.710Z",
+      "endTime": "2026-01-27T22:05:59.711Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 390,
+                "prompt_tokens": 377,
+                "total_tokens": 767,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 192,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+            "tool_calls": [
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Tokyo"
+                },
+                "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "New York"
+                },
+                "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "London"
+                },
+                "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Paris"
+                },
+                "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Sydney"
+                },
+                "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "AAPL"
+                },
+                "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "GOOGL"
+                },
+                "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "MSFT"
+                },
+                "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.92"
+                },
+                "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.79"
+                },
+                "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "0.15*378.90"
+                },
+                "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 377,
+              "output_tokens": 390,
+              "total_tokens": 767,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 192
+              }
+            }
+          },
+          {
+            "content": "Sunny, 72\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+            "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+            "status": "success"
+          },
+          {
+            "content": "Cloudy, 58\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+            "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+            "status": "success"
+          },
+          {
+            "content": "Rainy, 52\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "f7836df3-845e-409c-94e4-3037063d3594",
+            "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+            "status": "success"
+          },
+          {
+            "content": "Partly cloudy, 65\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+            "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+            "status": "success"
+          },
+          {
+            "content": "Clear, 78\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+            "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+            "status": "success"
+          },
+          {
+            "content": "$178.50",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+            "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+            "status": "success"
+          },
+          {
+            "content": "$142.30",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+            "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+            "status": "success"
+          },
+          {
+            "content": "$378.90",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+            "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+            "status": "success"
+          },
+          {
+            "content": "1/0.92 = 1.0869565217391304",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+            "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+            "status": "success"
+          },
+          {
+            "content": "1/0.79 = 1.2658227848101264",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+            "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+            "status": "success"
+          },
+          {
+            "content": "0.15*378.90 = 56.834999999999994",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+            "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+            "status": "success"
+          },
+          {
+            "content": "I ran the requested calls. Brief summary:\n\nWeather\n- Tokyo: Sunny, 72\u00b0F\n- New York: Cloudy, 58\u00b0F\n- London: Rainy, 52\u00b0F\n- Paris: Partly cloudy, 65\u00b0F\n- Sydney: Clear, 78\u00b0F\n\nStock prices\n- AAPL: $178.50\n- GOOGL: $142.30\n- MSFT: $378.90\n\nCalculations\n- 1 / 0.92 \u2248 1.08696\n- 1 / 0.79 \u2248 1.26582\n- 0.15 * 378.90 = 56.835\n\nIf you want any of these expanded (e.g., more precise numbers, different cities, or historical stock info), I can fetch that next.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 501,
+                "prompt_tokens": 708,
+                "total_tokens": 1209,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 320,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTzc1d6SnoGPyTaQjmw5ddA1q1x",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-da79-79e0-a624-af9feaaaf33f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 708,
+              "output_tokens": 501,
+              "total_tokens": 1209,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 320
+              }
+            }
+          }
+        ]
+      },
+      "output": "__end__"
+    },
+    {
+      "uuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "name": "tools",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019c017d-c015-73f0-87cd-908ff4b8db79",
+      "startTime": "2026-01-27T22:05:51.074Z",
+      "endTime": "2026-01-27T22:05:51.094Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 390,
+                "prompt_tokens": 377,
+                "total_tokens": 767,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 192,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+            "tool_calls": [
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Tokyo"
+                },
+                "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "New York"
+                },
+                "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "London"
+                },
+                "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Paris"
+                },
+                "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Sydney"
+                },
+                "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "AAPL"
+                },
+                "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "GOOGL"
+                },
+                "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "MSFT"
+                },
+                "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.92"
+                },
+                "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.79"
+                },
+                "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "0.15*378.90"
+                },
+                "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 377,
+              "output_tokens": 390,
+              "total_tokens": 767,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 192
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Sunny, 72\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+            "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+            "status": "success"
+          },
+          {
+            "content": "Cloudy, 58\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+            "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+            "status": "success"
+          },
+          {
+            "content": "Rainy, 52\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "f7836df3-845e-409c-94e4-3037063d3594",
+            "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+            "status": "success"
+          },
+          {
+            "content": "Partly cloudy, 65\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+            "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+            "status": "success"
+          },
+          {
+            "content": "Clear, 78\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+            "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+            "status": "success"
+          },
+          {
+            "content": "$178.50",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+            "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+            "status": "success"
+          },
+          {
+            "content": "$142.30",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+            "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+            "status": "success"
+          },
+          {
+            "content": "$378.90",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+            "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+            "status": "success"
+          },
+          {
+            "content": "1/0.92 = 1.0869565217391304",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+            "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+            "status": "success"
+          },
+          {
+            "content": "1/0.79 = 1.2658227848101264",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+            "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+            "status": "success"
+          },
+          {
+            "content": "0.15*378.90 = 56.834999999999994",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+            "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+            "status": "success"
+          }
+        ]
+      },
+      "toolsCalled": [
+        {
+          "name": "get_weather",
+          "output": {
+            "content": "Sunny, 72\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+            "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+            "status": "success"
+          },
+          "inputParameters": {
+            "city": "Tokyo"
+          }
+        },
+        {
+          "name": "get_weather",
+          "output": {
+            "content": "Cloudy, 58\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+            "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+            "status": "success"
+          },
+          "inputParameters": {
+            "city": "New York"
+          }
+        },
+        {
+          "name": "get_weather",
+          "output": {
+            "content": "Rainy, 52\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "f7836df3-845e-409c-94e4-3037063d3594",
+            "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+            "status": "success"
+          },
+          "inputParameters": {
+            "city": "London"
+          }
+        },
+        {
+          "name": "get_weather",
+          "output": {
+            "content": "Partly cloudy, 65\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+            "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+            "status": "success"
+          },
+          "inputParameters": {
+            "city": "Paris"
+          }
+        },
+        {
+          "name": "get_weather",
+          "output": {
+            "content": "Clear, 78\u00b0F",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_weather",
+            "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+            "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+            "status": "success"
+          },
+          "inputParameters": {
+            "city": "Sydney"
+          }
+        },
+        {
+          "name": "get_stock_price",
+          "output": {
+            "content": "$178.50",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+            "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+            "status": "success"
+          },
+          "inputParameters": {
+            "symbol": "AAPL"
+          }
+        },
+        {
+          "name": "get_stock_price",
+          "output": {
+            "content": "$142.30",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+            "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+            "status": "success"
+          },
+          "inputParameters": {
+            "symbol": "GOOGL"
+          }
+        },
+        {
+          "name": "get_stock_price",
+          "output": {
+            "content": "$378.90",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_stock_price",
+            "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+            "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+            "status": "success"
+          },
+          "inputParameters": {
+            "symbol": "MSFT"
+          }
+        },
+        {
+          "name": "calculate",
+          "output": {
+            "content": "1/0.92 = 1.0869565217391304",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+            "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+            "status": "success"
+          },
+          "inputParameters": {
+            "expression": "1/0.92"
+          }
+        },
+        {
+          "name": "calculate",
+          "output": {
+            "content": "1/0.79 = 1.2658227848101264",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+            "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+            "status": "success"
+          },
+          "inputParameters": {
+            "expression": "1/0.79"
+          }
+        },
+        {
+          "name": "calculate",
+          "output": {
+            "content": "0.15*378.90 = 56.834999999999994",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "calculate",
+            "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+            "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+            "status": "success"
+          },
+          "inputParameters": {
+            "expression": "0.15*378.90"
+          }
+        }
+      ]
+    },
+    {
+      "uuid": "019c017d-c017-7bd2-a0f8-692ad2c39f13",
+      "name": "agent",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019c017d-c015-73f0-87cd-908ff4b8db79",
+      "startTime": "2026-01-27T22:05:44.343Z",
+      "endTime": "2026-01-27T22:05:51.073Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 390,
+                "prompt_tokens": 377,
+                "total_tokens": 767,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 192,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+            "tool_calls": [
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Tokyo"
+                },
+                "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "New York"
+                },
+                "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "London"
+                },
+                "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Paris"
+                },
+                "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Sydney"
+                },
+                "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "AAPL"
+                },
+                "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "GOOGL"
+                },
+                "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "MSFT"
+                },
+                "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.92"
+                },
+                "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.79"
+                },
+                "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "0.15*378.90"
+                },
+                "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 377,
+              "output_tokens": 390,
+              "total_tokens": 767,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 192
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019c017d-da5e-7401-8722-1bb041c6b317",
+      "name": "should_continue",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019c017d-c017-7bd2-a0f8-692ad2c39f13",
+      "startTime": "2026-01-27T22:05:51.071Z",
+      "endTime": "2026-01-27T22:05:51.072Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 390,
+                "prompt_tokens": 377,
+                "total_tokens": 767,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 192,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+            "tool_calls": [
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Tokyo"
+                },
+                "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "New York"
+                },
+                "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "London"
+                },
+                "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Paris"
+                },
+                "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_weather",
+                "args": {
+                  "city": "Sydney"
+                },
+                "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "AAPL"
+                },
+                "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "GOOGL"
+                },
+                "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+                "type": "tool_call"
+              },
+              {
+                "name": "get_stock_price",
+                "args": {
+                  "symbol": "MSFT"
+                },
+                "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.92"
+                },
+                "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "1/0.79"
+                },
+                "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+                "type": "tool_call"
+              },
+              {
+                "name": "calculate",
+                "args": {
+                  "expression": "0.15*378.90"
+                },
+                "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 377,
+              "output_tokens": 390,
+              "total_tokens": 767,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 192
+              }
+            }
+          }
+        ]
+      },
+      "output": "tools"
+    }
+  ],
+  "agentSpans": [],
+  "llmSpans": [
+    {
+      "uuid": "019c017d-da79-79e0-a624-af9feaaaf33f",
+      "name": "ChatOpenAI",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "019c017d-da77-7ac2-b240-34d6280baa58",
+      "startTime": "2026-01-27T22:05:51.097Z",
+      "endTime": "2026-01-27T22:05:59.709Z",
+      "input": [
+        {
+          "role": "human",
+          "content": "You are a helpful assistant with access to multiple tools.\n        When asked for multiple pieces of information, call all relevant tools in parallel."
+        },
+        {
+          "role": "human",
+          "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary."
+        },
+        {
+          "role": "ai",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Sunny, 72\u00b0F"
+        },
+        {
+          "role": "tool",
+          "content": "Cloudy, 58\u00b0F"
+        },
+        {
+          "role": "tool",
+          "content": "Rainy, 52\u00b0F"
+        },
+        {
+          "role": "tool",
+          "content": "Partly cloudy, 65\u00b0F"
+        },
+        {
+          "role": "tool",
+          "content": "Clear, 78\u00b0F"
+        },
+        {
+          "role": "tool",
+          "content": "$178.50"
+        },
+        {
+          "role": "tool",
+          "content": "$142.30"
+        },
+        {
+          "role": "tool",
+          "content": "$378.90"
+        },
+        {
+          "role": "tool",
+          "content": "1/0.92 = 1.0869565217391304"
+        },
+        {
+          "role": "tool",
+          "content": "1/0.79 = 1.2658227848101264"
+        },
+        {
+          "role": "tool",
+          "content": "0.15*378.90 = 56.834999999999994"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'get_weather', 'description': 'Get weather for a city.', 'parameters': {'properties': {'city': {'type': 'string'}}, 'required': ['city'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'get_stock_price', 'description': 'Get stock price for a symbol.', 'parameters': {'properties': {'symbol': {'type': 'string'}}, 'required': ['symbol'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'get_exchange_rate', 'description': 'Get exchange rate between currencies.', 'parameters': {'properties': {'from_currency': {'type': 'string'}, 'to_currency': {'type': 'string'}}, 'required': ['from_currency', 'to_currency'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'search_news', 'description': 'Search for news about a topic.', 'parameters': {'properties': {'topic': {'type': 'string'}}, 'required': ['topic'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'calculate', 'description': 'Calculate a math expression.', 'parameters': {'properties': {'expression': {'type': 'string'}}, 'required': ['expression'], 'type': 'object'}}}"
+        }
+      ],
+      "output": {
+        "role": "AI",
+        "content": "I ran the requested calls. Brief summary:\n\nWeather\n- Tokyo: Sunny, 72\u00b0F\n- New York: Cloudy, 58\u00b0F\n- London: Rainy, 52\u00b0F\n- Paris: Partly cloudy, 65\u00b0F\n- Sydney: Clear, 78\u00b0F\n\nStock prices\n- AAPL: $178.50\n- GOOGL: $142.30\n- MSFT: $378.90\n\nCalculations\n- 1 / 0.92 \u2248 1.08696\n- 1 / 0.79 \u2248 1.26582\n- 0.15 * 378.90 = 56.835\n\nIf you want any of these expanded (e.g., more precise numbers, different cities, or historical stock info), I can fetch that next.",
+        "tool_calls": []
+      },
+      "model": "gpt-5-mini-2025-08-07",
+      "inputTokenCount": 708.0,
+      "outputTokenCount": 501.0
+    },
+    {
+      "uuid": "019c017d-c017-7bd2-a0f8-693124df307e",
+      "name": "ChatOpenAI",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "019c017d-c017-7bd2-a0f8-692ad2c39f13",
+      "startTime": "2026-01-27T22:05:44.344Z",
+      "endTime": "2026-01-27T22:05:51.069Z",
+      "input": [
+        {
+          "role": "human",
+          "content": "You are a helpful assistant with access to multiple tools.\n        When asked for multiple pieces of information, call all relevant tools in parallel."
+        },
+        {
+          "role": "human",
+          "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary."
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'get_weather', 'description': 'Get weather for a city.', 'parameters': {'properties': {'city': {'type': 'string'}}, 'required': ['city'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'get_stock_price', 'description': 'Get stock price for a symbol.', 'parameters': {'properties': {'symbol': {'type': 'string'}}, 'required': ['symbol'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'get_exchange_rate', 'description': 'Get exchange rate between currencies.', 'parameters': {'properties': {'from_currency': {'type': 'string'}, 'to_currency': {'type': 'string'}}, 'required': ['from_currency', 'to_currency'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'search_news', 'description': 'Search for news about a topic.', 'parameters': {'properties': {'topic': {'type': 'string'}}, 'required': ['topic'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'calculate', 'description': 'Calculate a math expression.', 'parameters': {'properties': {'expression': {'type': 'string'}}, 'required': ['expression'], 'type': 'object'}}}"
+        }
+      ],
+      "output": {
+        "role": "AI",
+        "content": "",
+        "tool_calls": [
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "Tokyo"
+            },
+            "id": "call_7L6HbBBTYssMiuJtkpatsgJm"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "New York"
+            },
+            "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "London"
+            },
+            "id": "call_WohUa1rMrrHvLTHrXdDVrPhe"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "Paris"
+            },
+            "id": "call_hmypKNOIHtTIZBDezCfIRVaP"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "Sydney"
+            },
+            "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie"
+          },
+          {
+            "name": "get_stock_price",
+            "args": {
+              "symbol": "AAPL"
+            },
+            "id": "call_itw3T32kaSlGd1yU0o2kw3n3"
+          },
+          {
+            "name": "get_stock_price",
+            "args": {
+              "symbol": "GOOGL"
+            },
+            "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe"
+          },
+          {
+            "name": "get_stock_price",
+            "args": {
+              "symbol": "MSFT"
+            },
+            "id": "call_f6Q4lLgw0lW21HRnGQBbFn27"
+          },
+          {
+            "name": "calculate",
+            "args": {
+              "expression": "1/0.92"
+            },
+            "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl"
+          },
+          {
+            "name": "calculate",
+            "args": {
+              "expression": "1/0.79"
+            },
+            "id": "call_JMwDspKKfkmbhHsx5UomnGYX"
+          },
+          {
+            "name": "calculate",
+            "args": {
+              "expression": "0.15*378.90"
+            },
+            "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS"
+          }
+        ]
+      },
+      "model": "gpt-5-mini-2025-08-07",
+      "inputTokenCount": 377.0,
+      "outputTokenCount": 390.0
+    }
+  ],
+  "retrieverSpans": [],
+  "toolSpans": [
+    {
+      "uuid": "019c017d-da74-7002-ad0c-4ee968ff89bb",
+      "name": "calculate",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.092Z",
+      "endTime": "2026-01-27T22:05:51.093Z",
+      "input": {
+        "expression": "0.15*378.90"
+      },
+      "output": {
+        "content": "0.15*378.90 = 56.834999999999994",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+        "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da73-7460-99f8-268f6c07d5a0",
+      "name": "calculate",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.091Z",
+      "endTime": "2026-01-27T22:05:51.092Z",
+      "input": {
+        "expression": "1/0.79"
+      },
+      "output": {
+        "content": "1/0.79 = 1.2658227848101264",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+        "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da71-7960-8524-3587c1680263",
+      "name": "calculate",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.089Z",
+      "endTime": "2026-01-27T22:05:51.090Z",
+      "input": {
+        "expression": "1/0.92"
+      },
+      "output": {
+        "content": "1/0.92 = 1.0869565217391304",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+        "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da6f-7a82-a9d1-fdb1d7785a07",
+      "name": "get_stock_price",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.087Z",
+      "endTime": "2026-01-27T22:05:51.088Z",
+      "input": {
+        "symbol": "MSFT"
+      },
+      "output": {
+        "content": "$378.90",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+        "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da6e-77e1-aeae-80528ec1f922",
+      "name": "get_stock_price",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.086Z",
+      "endTime": "2026-01-27T22:05:51.087Z",
+      "input": {
+        "symbol": "GOOGL"
+      },
+      "output": {
+        "content": "$142.30",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+        "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da6d-7140-88a4-727d8ae27115",
+      "name": "get_stock_price",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.085Z",
+      "endTime": "2026-01-27T22:05:51.086Z",
+      "input": {
+        "symbol": "AAPL"
+      },
+      "output": {
+        "content": "$178.50",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+        "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da6b-7a52-a5ab-934dca4c9548",
+      "name": "get_weather",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.083Z",
+      "endTime": "2026-01-27T22:05:51.084Z",
+      "input": {
+        "city": "Sydney"
+      },
+      "output": {
+        "content": "Clear, 78\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+        "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da69-7f11-b880-78c9d00c5fe0",
+      "name": "get_weather",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.081Z",
+      "endTime": "2026-01-27T22:05:51.082Z",
+      "input": {
+        "city": "Paris"
+      },
+      "output": {
+        "content": "Partly cloudy, 65\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+        "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da68-7151-b0a7-018535066591",
+      "name": "get_weather",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.080Z",
+      "endTime": "2026-01-27T22:05:51.081Z",
+      "input": {
+        "city": "London"
+      },
+      "output": {
+        "content": "Rainy, 52\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "f7836df3-845e-409c-94e4-3037063d3594",
+        "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da66-79e3-831e-edc8b63d0c58",
+      "name": "get_weather",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.078Z",
+      "endTime": "2026-01-27T22:05:51.079Z",
+      "input": {
+        "city": "New York"
+      },
+      "output": {
+        "content": "Cloudy, 58\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+        "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+        "status": "success"
+      }
+    },
+    {
+      "uuid": "019c017d-da64-74e3-93cd-5155b137d5d8",
+      "name": "get_weather",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019c017d-da62-7be3-8079-b79141de021c",
+      "startTime": "2026-01-27T22:05:51.076Z",
+      "endTime": "2026-01-27T22:05:51.077Z",
+      "input": {
+        "city": "Tokyo"
+      },
+      "output": {
+        "content": "Sunny, 72\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+        "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+        "status": "success"
+      }
+    }
+  ],
+  "startTime": "2026-01-27T22:05:44.342Z",
+  "endTime": "2026-01-27T22:05:59.713Z",
+  "name": "langgraph-parallel-async-heavy",
+  "tags": [
+    "langgraph",
+    "parallel",
+    "async",
+    "heavy"
+  ],
+  "environment": "development",
+  "input": {
+    "messages": [
+      {
+        "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+      }
+    ]
+  },
+  "output": {
+    "messages": [
+      {
+        "content": "Call exactly these tools with the exact parameters shown. Do NOT use any other tools.\n\n1. get_weather(city='Tokyo')\n2. get_weather(city='New York')\n3. get_weather(city='London')\n4. get_weather(city='Paris')\n5. get_weather(city='Sydney')\n6. get_stock_price(symbol='AAPL')\n7. get_stock_price(symbol='GOOGL')\n8. get_stock_price(symbol='MSFT')\n9. calculate(expression='1/0.92')\n10. calculate(expression='1/0.79')\n11. calculate(expression='0.15*378.90')\n\nAfter receiving all results, provide a brief summary.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "cf957559-29f2-4990-99bc-3064d97c1c5a"
+      },
+      {
+        "content": "",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 390,
+            "prompt_tokens": 377,
+            "total_tokens": 767,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 192,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2lTsiYIRHo6xjCCctbvwcBiADv3S",
+          "service_tier": "default",
+          "finish_reason": "tool_calls",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019c017d-c017-7bd2-a0f8-693124df307e-0",
+        "tool_calls": [
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "Tokyo"
+            },
+            "id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "New York"
+            },
+            "id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "London"
+            },
+            "id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "Paris"
+            },
+            "id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_weather",
+            "args": {
+              "city": "Sydney"
+            },
+            "id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_stock_price",
+            "args": {
+              "symbol": "AAPL"
+            },
+            "id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_stock_price",
+            "args": {
+              "symbol": "GOOGL"
+            },
+            "id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+            "type": "tool_call"
+          },
+          {
+            "name": "get_stock_price",
+            "args": {
+              "symbol": "MSFT"
+            },
+            "id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+            "type": "tool_call"
+          },
+          {
+            "name": "calculate",
+            "args": {
+              "expression": "1/0.92"
+            },
+            "id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+            "type": "tool_call"
+          },
+          {
+            "name": "calculate",
+            "args": {
+              "expression": "1/0.79"
+            },
+            "id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+            "type": "tool_call"
+          },
+          {
+            "name": "calculate",
+            "args": {
+              "expression": "0.15*378.90"
+            },
+            "id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+            "type": "tool_call"
+          }
+        ],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 377,
+          "output_tokens": 390,
+          "total_tokens": 767,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 192
+          }
+        }
+      },
+      {
+        "content": "Sunny, 72\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+        "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+        "status": "success"
+      },
+      {
+        "content": "Cloudy, 58\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+        "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+        "status": "success"
+      },
+      {
+        "content": "Rainy, 52\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "f7836df3-845e-409c-94e4-3037063d3594",
+        "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+        "status": "success"
+      },
+      {
+        "content": "Partly cloudy, 65\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+        "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+        "status": "success"
+      },
+      {
+        "content": "Clear, 78\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+        "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+        "status": "success"
+      },
+      {
+        "content": "$178.50",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+        "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+        "status": "success"
+      },
+      {
+        "content": "$142.30",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+        "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+        "status": "success"
+      },
+      {
+        "content": "$378.90",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+        "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+        "status": "success"
+      },
+      {
+        "content": "1/0.92 = 1.0869565217391304",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+        "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+        "status": "success"
+      },
+      {
+        "content": "1/0.79 = 1.2658227848101264",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+        "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+        "status": "success"
+      },
+      {
+        "content": "0.15*378.90 = 56.834999999999994",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+        "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+        "status": "success"
+      },
+      {
+        "content": "I ran the requested calls. Brief summary:\n\nWeather\n- Tokyo: Sunny, 72\u00b0F\n- New York: Cloudy, 58\u00b0F\n- London: Rainy, 52\u00b0F\n- Paris: Partly cloudy, 65\u00b0F\n- Sydney: Clear, 78\u00b0F\n\nStock prices\n- AAPL: $178.50\n- GOOGL: $142.30\n- MSFT: $378.90\n\nCalculations\n- 1 / 0.92 \u2248 1.08696\n- 1 / 0.79 \u2248 1.26582\n- 0.15 * 378.90 = 56.835\n\nIf you want any of these expanded (e.g., more precise numbers, different cities, or historical stock info), I can fetch that next.",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 501,
+            "prompt_tokens": 708,
+            "total_tokens": 1209,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 320,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2lTzc1d6SnoGPyTaQjmw5ddA1q1x",
+          "service_tier": "default",
+          "finish_reason": "stop",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019c017d-da79-79e0-a624-af9feaaaf33f-0",
+        "tool_calls": [],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 708,
+          "output_tokens": 501,
+          "total_tokens": 1209,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 320
+          }
+        }
+      }
+    ]
+  },
+  "status": "SUCCESS",
+  "toolsCalled": [
+    {
+      "name": "get_weather",
+      "output": {
+        "content": "Sunny, 72\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "fa22203b-54e7-490f-a5cb-011f3f95d325",
+        "tool_call_id": "call_7L6HbBBTYssMiuJtkpatsgJm",
+        "status": "success"
+      },
+      "inputParameters": {
+        "city": "Tokyo"
+      }
+    },
+    {
+      "name": "get_weather",
+      "output": {
+        "content": "Cloudy, 58\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "c981b5db-c1db-4273-9980-1ede95363c83",
+        "tool_call_id": "call_5OQ5WZaQryFu30BvMqRGJ8y6",
+        "status": "success"
+      },
+      "inputParameters": {
+        "city": "New York"
+      }
+    },
+    {
+      "name": "get_weather",
+      "output": {
+        "content": "Rainy, 52\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "f7836df3-845e-409c-94e4-3037063d3594",
+        "tool_call_id": "call_WohUa1rMrrHvLTHrXdDVrPhe",
+        "status": "success"
+      },
+      "inputParameters": {
+        "city": "London"
+      }
+    },
+    {
+      "name": "get_weather",
+      "output": {
+        "content": "Partly cloudy, 65\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "7e72c3b6-a53a-423f-899e-5bfdd1cad1d7",
+        "tool_call_id": "call_hmypKNOIHtTIZBDezCfIRVaP",
+        "status": "success"
+      },
+      "inputParameters": {
+        "city": "Paris"
+      }
+    },
+    {
+      "name": "get_weather",
+      "output": {
+        "content": "Clear, 78\u00b0F",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_weather",
+        "id": "ec9a7bcd-c8c8-4b97-be95-29aa9acc7c63",
+        "tool_call_id": "call_vqU1pQXVOWkpTt8rAVwBG8ie",
+        "status": "success"
+      },
+      "inputParameters": {
+        "city": "Sydney"
+      }
+    },
+    {
+      "name": "get_stock_price",
+      "output": {
+        "content": "$178.50",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "55df9c83-587c-4604-9c4c-94c11a729615",
+        "tool_call_id": "call_itw3T32kaSlGd1yU0o2kw3n3",
+        "status": "success"
+      },
+      "inputParameters": {
+        "symbol": "AAPL"
+      }
+    },
+    {
+      "name": "get_stock_price",
+      "output": {
+        "content": "$142.30",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "be4be644-51ce-4614-ace5-64706bc6c391",
+        "tool_call_id": "call_fFwBPY3lkZMwOx6u6bqkWbGe",
+        "status": "success"
+      },
+      "inputParameters": {
+        "symbol": "GOOGL"
+      }
+    },
+    {
+      "name": "get_stock_price",
+      "output": {
+        "content": "$378.90",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "get_stock_price",
+        "id": "bb0580f5-b9f0-4a13-a603-1bc00a40cba1",
+        "tool_call_id": "call_f6Q4lLgw0lW21HRnGQBbFn27",
+        "status": "success"
+      },
+      "inputParameters": {
+        "symbol": "MSFT"
+      }
+    },
+    {
+      "name": "calculate",
+      "output": {
+        "content": "1/0.92 = 1.0869565217391304",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "151ecc29-2dc0-41ea-913d-d2f38faf1fb8",
+        "tool_call_id": "call_WfWrBSgfNxs0Vsi31Z3lc9Fl",
+        "status": "success"
+      },
+      "inputParameters": {
+        "expression": "1/0.92"
+      }
+    },
+    {
+      "name": "calculate",
+      "output": {
+        "content": "1/0.79 = 1.2658227848101264",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "f88ce79e-37ea-46cb-8345-73a65ea333f1",
+        "tool_call_id": "call_JMwDspKKfkmbhHsx5UomnGYX",
+        "status": "success"
+      },
+      "inputParameters": {
+        "expression": "1/0.79"
+      }
+    },
+    {
+      "name": "calculate",
+      "output": {
+        "content": "0.15*378.90 = 56.834999999999994",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "calculate",
+        "id": "840f9ed8-81f2-471a-aae9-49c5283e1d06",
+        "tool_call_id": "call_iWTXLOCEOT2A6TRcnPjjuzdS",
+        "status": "success"
+      },
+      "inputParameters": {
+        "expression": "0.15*378.90"
+      }
+    }
+  ]
+}

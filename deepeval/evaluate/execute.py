@@ -51,12 +51,15 @@ from deepeval.utils import (
     shorten,
     len_medium,
     format_error_text,
+    are_timeouts_disabled,
+    get_per_task_timeout_seconds,
+    get_gather_timeout_seconds,
+    get_gather_timeout,
 )
 from deepeval.telemetry import capture_evaluation_run
 from deepeval.metrics import (
     BaseMetric,
     BaseConversationalMetric,
-    BaseMultimodalMetric,
     TaskCompletionMetric,
 )
 from deepeval.metrics.indicator import (
@@ -70,7 +73,6 @@ from deepeval.models.retry_policy import (
 from deepeval.test_case import (
     LLMTestCase,
     ConversationalTestCase,
-    MLLMTestCase,
 )
 from deepeval.test_case.api import create_api_test_case
 from deepeval.test_run import (
@@ -109,6 +111,57 @@ from deepeval.test_run.hyperparameters import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _timeout_msg(action: str, seconds: float) -> str:
+    if are_timeouts_disabled():
+        return (
+            f"Timeout occurred while {action} "
+            "(DeepEval timeouts are disabled; this likely came from the model/provider SDK or network layer). "
+            "Set DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+        )
+    return (
+        f"Timed out after {seconds:.2f}s while {action}. "
+        "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
+        "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+    )
+
+
+def _log_gather_timeout(
+    logger,
+    *,
+    exc: Optional[BaseException] = None,
+    pending: Optional[int] = None,
+) -> None:
+    settings = get_settings()
+    if are_timeouts_disabled():
+        logger.warning(
+            "A task raised %s while waiting for gathered results; DeepEval gather/per-task timeouts are disabled%s. "
+            "This likely came from the model/provider SDK or network layer.",
+            type(exc).__name__ if exc else "TimeoutError",
+            f" (pending={pending})" if pending is not None else "",
+            exc_info=settings.DEEPEVAL_LOG_STACK_TRACES,
+        )
+    else:
+        if pending is not None:
+            logger.warning(
+                "Gather TIMEOUT after %.1fs; pending=%d tasks. "
+                "Some metrics may be marked as timed out. "
+                "To give tasks more time, consider increasing "
+                "DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or "
+                "DEEPEVAL_TASK_GATHER_BUFFER_SECONDS_OVERRIDE.",
+                get_gather_timeout_seconds(),
+                pending,
+            )
+
+        else:
+            logger.warning(
+                "gather TIMEOUT after %.1fs. Some metrics may be marked as timed out. "
+                "To give tasks more time, consider increasing "
+                "DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or "
+                "DEEPEVAL_TASK_GATHER_BUFFER_SECONDS_OVERRIDE.",
+                get_gather_timeout_seconds(),
+            )
 
 
 def _skip_metrics_for_error(
@@ -219,18 +272,6 @@ async def _snapshot_tasks():
     return {t for t in asyncio.all_tasks() if t is not cur}
 
 
-def _per_task_timeout() -> float:
-    return get_settings().DEEPEVAL_PER_TASK_TIMEOUT_SECONDS
-
-
-def _gather_timeout() -> float:
-    s = get_settings()
-    return (
-        s.DEEPEVAL_PER_TASK_TIMEOUT_SECONDS
-        + s.DEEPEVAL_TASK_GATHER_BUFFER_SECONDS
-    )
-
-
 def filter_duplicate_results(
     main_result: TestResult, results: List[TestResult]
 ) -> List[TestResult]:
@@ -252,6 +293,10 @@ async def _await_with_outer_deadline(obj, *args, timeout: float, **kwargs):
             coro = obj
         else:
             coro = obj(*args, **kwargs)
+
+        if get_settings().DEEPEVAL_DISABLE_TIMEOUTS:
+            return await coro
+
         return await asyncio.wait_for(coro, timeout=timeout)
     finally:
         reset_outer_deadline(token)
@@ -263,13 +308,10 @@ async def _await_with_outer_deadline(obj, *args, timeout: float, **kwargs):
 
 
 def execute_test_cases(
-    test_cases: Union[
-        List[LLMTestCase], List[ConversationalTestCase], List[MLLMTestCase]
-    ],
+    test_cases: Union[List[LLMTestCase], List[ConversationalTestCase]],
     metrics: Union[
         List[BaseMetric],
         List[BaseConversationalMetric],
-        List[BaseMultimodalMetric],
     ],
     error_config: Optional[ErrorConfig] = ErrorConfig(),
     display_config: Optional[DisplayConfig] = DisplayConfig(),
@@ -302,15 +344,12 @@ def execute_test_cases(
 
     conversational_metrics: List[BaseConversationalMetric] = []
     llm_metrics: List[BaseMetric] = []
-    mllm_metrics: List[BaseMultimodalMetric] = []
     for metric in metrics:
         metric.async_mode = False
         if isinstance(metric, BaseMetric):
             llm_metrics.append(metric)
         elif isinstance(metric, BaseConversationalMetric):
             conversational_metrics.append(metric)
-        elif isinstance(metric, BaseMultimodalMetric):
-            mllm_metrics.append(metric)
 
     test_results: List[TestResult] = []
 
@@ -318,7 +357,6 @@ def execute_test_cases(
         progress: Optional[Progress] = None, pbar_id: Optional[int] = None
     ):
         llm_test_case_count = -1
-        mllm_test_case_count = -1
         conversational_test_case_count = -1
         show_metric_indicator = (
             display_config.show_indicator and not _use_bar_indicator
@@ -330,11 +368,6 @@ def execute_test_cases(
                     update_pbar(progress, pbar_id)
                     continue
                 per_case_total = len(llm_metrics)
-            elif isinstance(test_case, MLLMTestCase):
-                if not mllm_metrics:
-                    update_pbar(progress, pbar_id)
-                    continue
-                per_case_total = len(mllm_metrics)
             elif isinstance(test_case, ConversationalTestCase):
                 if not conversational_metrics:
                     update_pbar(progress, pbar_id)
@@ -349,36 +382,28 @@ def execute_test_cases(
 
             metrics_for_case = (
                 llm_metrics
-                if isinstance(test_case, LLMTestCase)
-                else (
-                    mllm_metrics
-                    if isinstance(test_case, MLLMTestCase)
-                    else conversational_metrics
-                )
+                if (isinstance(test_case, LLMTestCase))
+                else conversational_metrics
             )
             api_test_case = create_api_test_case(
                 test_case=test_case,
                 index=(
                     llm_test_case_count + 1
-                    if isinstance(test_case, LLMTestCase)
-                    else (
-                        mllm_test_case_count + 1
-                        if isinstance(test_case, MLLMTestCase)
-                        else conversational_test_case_count + 1
-                    )
+                    if (isinstance(test_case, LLMTestCase))
+                    else (conversational_test_case_count + 1)
                 ),
             )
             emitted = [False] * len(metrics_for_case)
             index_of = {id(m): i for i, m in enumerate(metrics_for_case)}
             current_index = -1
             start_time = time.perf_counter()
-            deadline_timeout = _per_task_timeout()
+            deadline_timeout = get_per_task_timeout_seconds()
             deadline_token = set_outer_deadline(deadline_timeout)
             new_cached_test_case: CachedTestCase = None
             try:
 
                 def _run_case():
-                    nonlocal new_cached_test_case, current_index, llm_test_case_count, mllm_test_case_count, conversational_test_case_count
+                    nonlocal new_cached_test_case, current_index, llm_test_case_count, conversational_test_case_count
                     with capture_evaluation_run("test case"):
                         for metric in metrics:
                             metric.error = None  # Reset metric error
@@ -435,26 +460,6 @@ def execute_test_cases(
                                     )
                                 update_pbar(progress, pbar_test_case_id)
 
-                        # No caching and not sending test cases to Confident AI for multimodal metrics yet
-                        elif isinstance(test_case, MLLMTestCase):
-                            mllm_test_case_count += 1
-                            for metric in mllm_metrics:
-                                current_index = index_of[id(metric)]
-                                res = _execute_metric(
-                                    metric=metric,
-                                    test_case=test_case,
-                                    show_metric_indicator=show_metric_indicator,
-                                    in_component=False,
-                                    error_config=error_config,
-                                )
-                                if res == "skip":
-                                    continue
-
-                                metric_data = create_metric_data(metric)
-                                api_test_case.update_metric_data(metric_data)
-                                emitted[current_index] = True
-                                update_pbar(progress, pbar_test_case_id)
-
                         # No caching for conversational metrics yet
                         elif isinstance(test_case, ConversationalTestCase):
                             conversational_test_case_count += 1
@@ -477,25 +482,20 @@ def execute_test_cases(
 
                 run_sync_with_timeout(_run_case, deadline_timeout)
             except (asyncio.TimeoutError, TimeoutError):
-                msg = (
-                    f"Timed out after {deadline_timeout:.2f}s while evaluating metric. "
-                    "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
-                    "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
-                )
-                for i, m in enumerate(metrics_for_case):
-                    if getattr(m, "skipped", False):
+
+                msg = _timeout_msg("evaluating metric", deadline_timeout)
+                for i, metric in enumerate(metrics_for_case):
+                    if metric.skipped:
                         continue
                     # already finished or errored? leave it
-                    if getattr(m, "success", None) is not None or getattr(
-                        m, "error", None
-                    ):
+                    if metric.success is not None or metric.error is not None:
                         continue
                     if i == current_index:
-                        m.success = False
-                        m.error = msg
+                        metric.success = False
+                        metric.error = msg
                     elif i > current_index:
-                        m.success = False
-                        m.error = "Skipped due to case timeout."
+                        metric.success = False
+                        metric.error = "Skipped due to case timeout."
 
                 if not error_config.ignore_errors:
                     raise
@@ -520,12 +520,12 @@ def execute_test_cases(
                         )
 
                     # Attach MetricData for *all* metrics (finished or synthesized)
-                    for i, m in enumerate(metrics_for_case):
-                        if getattr(m, "skipped", False):
+                    for i, metric in enumerate(metrics_for_case):
+                        if metric.skipped:
                             continue
                         if not emitted[i]:
                             api_test_case.update_metric_data(
-                                create_metric_data(m)
+                                create_metric_data(metric)
                             )
 
                     elapsed = time.perf_counter() - start_time
@@ -560,13 +560,10 @@ def execute_test_cases(
 
 
 async def a_execute_test_cases(
-    test_cases: Union[
-        List[LLMTestCase], List[ConversationalTestCase], List[MLLMTestCase]
-    ],
+    test_cases: Union[List[LLMTestCase], List[ConversationalTestCase]],
     metrics: Union[
         List[BaseMetric],
         List[BaseConversationalMetric],
-        List[BaseMultimodalMetric],
     ],
     error_config: Optional[ErrorConfig] = ErrorConfig(),
     display_config: Optional[DisplayConfig] = DisplayConfig(),
@@ -581,9 +578,8 @@ async def a_execute_test_cases(
 
     async def execute_with_semaphore(func: Callable, *args, **kwargs):
         async with semaphore:
-            timeout = _per_task_timeout()
             return await _await_with_outer_deadline(
-                func, *args, timeout=timeout, **kwargs
+                func, *args, timeout=get_per_task_timeout_seconds(), **kwargs
             )
 
     global_test_run_cache_manager.disable_write_cache = (
@@ -600,20 +596,16 @@ async def a_execute_test_cases(
             metric.verbose_mode = display_config.verbose_mode
 
     llm_metrics: List[BaseMetric] = []
-    mllm_metrics: List[BaseMultimodalMetric] = []
     conversational_metrics: List[BaseConversationalMetric] = []
     for metric in metrics:
         if isinstance(metric, BaseMetric):
             llm_metrics.append(metric)
-        elif isinstance(metric, BaseMultimodalMetric):
-            mllm_metrics.append(metric)
         elif isinstance(metric, BaseConversationalMetric):
             conversational_metrics.append(metric)
 
     llm_test_case_counter = -1
-    mllm_test_case_counter = -1
     conversational_test_case_counter = -1
-    test_results: List[Union[TestResult, MLLMTestCase]] = []
+    test_results: List[Union[TestResult, LLMTestCase]] = []
     tasks = []
 
     if display_config.show_indicator and _use_bar_indicator:
@@ -660,28 +652,6 @@ async def a_execute_test_cases(
                         )
                         tasks.append(asyncio.create_task(task))
 
-                    elif isinstance(test_case, MLLMTestCase):
-                        mllm_test_case_counter += 1
-                        copied_multimodal_metrics: List[
-                            BaseMultimodalMetric
-                        ] = copy_metrics(mllm_metrics)
-                        task = execute_with_semaphore(
-                            func=_a_execute_mllm_test_cases,
-                            metrics=copied_multimodal_metrics,
-                            test_case=test_case,
-                            test_run_manager=test_run_manager,
-                            test_results=test_results,
-                            count=mllm_test_case_counter,
-                            ignore_errors=error_config.ignore_errors,
-                            skip_on_missing_params=error_config.skip_on_missing_params,
-                            show_indicator=display_config.show_indicator,
-                            _use_bar_indicator=_use_bar_indicator,
-                            _is_assert_test=_is_assert_test,
-                            progress=progress,
-                            pbar_id=pbar_id,
-                        )
-                        tasks.append(asyncio.create_task(task))
-
                     elif isinstance(test_case, ConversationalTestCase):
                         conversational_test_case_counter += 1
 
@@ -707,17 +677,16 @@ async def a_execute_test_cases(
             try:
                 await asyncio.wait_for(
                     asyncio.gather(*tasks),
-                    timeout=_gather_timeout(),
+                    timeout=get_gather_timeout(),
                 )
-            except (asyncio.TimeoutError, TimeoutError):
+            except (asyncio.TimeoutError, TimeoutError) as e:
                 for t in tasks:
                     if not t.done():
                         t.cancel()
                 await asyncio.gather(*tasks, return_exceptions=True)
-                logging.getLogger("deepeval").error(
-                    "Gather timed out after %.1fs. Some metrics may be marked as timed out.",
-                    _gather_timeout(),
-                )
+
+                _log_gather_timeout(logger, exc=e)
+
                 if not error_config.ignore_errors:
                     raise
 
@@ -772,32 +741,12 @@ async def a_execute_test_cases(
                     )
                     tasks.append(asyncio.create_task((task)))
 
-                elif isinstance(test_case, MLLMTestCase):
-                    mllm_test_case_counter += 1
-                    copied_multimodal_metrics: List[BaseMultimodalMetric] = (
-                        copy_metrics(mllm_metrics)
-                    )
-                    task = execute_with_semaphore(
-                        func=_a_execute_mllm_test_cases,
-                        metrics=copied_multimodal_metrics,
-                        test_case=test_case,
-                        test_run_manager=test_run_manager,
-                        test_results=test_results,
-                        count=mllm_test_case_counter,
-                        ignore_errors=error_config.ignore_errors,
-                        skip_on_missing_params=error_config.skip_on_missing_params,
-                        _use_bar_indicator=_use_bar_indicator,
-                        _is_assert_test=_is_assert_test,
-                        show_indicator=display_config.show_indicator,
-                    )
-                    tasks.append(asyncio.create_task(task))
-
                 await asyncio.sleep(async_config.throttle_value)
 
         try:
             await asyncio.wait_for(
                 asyncio.gather(*tasks),
-                timeout=_gather_timeout(),
+                timeout=get_gather_timeout(),
             )
         except (asyncio.TimeoutError, TimeoutError):
             # Cancel any still-pending tasks and drain them
@@ -815,7 +764,7 @@ async def _a_execute_llm_test_cases(
     metrics: List[BaseMetric],
     test_case: LLMTestCase,
     test_run_manager: TestRunManager,
-    test_results: List[Union[TestResult, MLLMTestCase]],
+    test_results: List[Union[TestResult, LLMTestCase]],
     count: int,
     test_run: TestRun,
     ignore_errors: bool,
@@ -866,11 +815,18 @@ async def _a_execute_llm_test_cases(
             progress=progress,
         )
     except asyncio.CancelledError:
-        msg = (
-            "Timed out/cancelled while evaluating metric. "
-            "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
-            "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
-        )
+        if get_settings().DEEPEVAL_DISABLE_TIMEOUTS:
+            msg = (
+                "Cancelled while evaluating metric. "
+                "(DeepEval timeouts are disabled; this cancellation likely came from upstream orchestration or manual cancellation). "
+                "Set DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            )
+        else:
+            msg = (
+                "Timed out/cancelled while evaluating metric. "
+                "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
+                "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            )
         for m in metrics:
             if getattr(m, "skipped", False):
                 continue
@@ -932,88 +888,11 @@ async def _a_execute_llm_test_cases(
         update_pbar(progress, pbar_id)
 
 
-async def _a_execute_mllm_test_cases(
-    metrics: List[BaseMultimodalMetric],
-    test_case: MLLMTestCase,
-    test_run_manager: TestRunManager,
-    test_results: List[Union[TestResult, MLLMTestCase]],
-    count: int,
-    ignore_errors: bool,
-    skip_on_missing_params: bool,
-    show_indicator: bool,
-    _use_bar_indicator: bool,
-    _is_assert_test: bool,
-    progress: Optional[Progress] = None,
-    pbar_id: Optional[int] = None,
-):
-    show_metrics_indicator = show_indicator and not _use_bar_indicator
-    pbar_test_case_id = add_pbar(
-        progress,
-        f"    🎯 Evaluating test case #{count}",
-        total=len(metrics),
-    )
-
-    for metric in metrics:
-        metric.skipped = False
-        metric.error = None  # Reset metric error
-
-    api_test_case: LLMApiTestCase = create_api_test_case(
-        test_case=test_case, index=count if not _is_assert_test else None
-    )
-    test_start_time = time.perf_counter()
-    try:
-        await measure_metrics_with_indicator(
-            metrics=metrics,
-            test_case=test_case,
-            cached_test_case=None,
-            skip_on_missing_params=skip_on_missing_params,
-            ignore_errors=ignore_errors,
-            show_indicator=show_metrics_indicator,
-            pbar_eval_id=pbar_test_case_id,
-            progress=progress,
-        )
-    except asyncio.CancelledError:
-        msg = (
-            "Timed out/cancelled while evaluating metric. "
-            "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
-            "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
-        )
-        for m in metrics:
-            if getattr(m, "skipped", False):
-                continue
-            # If the task never finished and didn't set a terminal state, mark it now
-            if getattr(m, "success", None) is None and not getattr(
-                m, "error", None
-            ):
-                m.success = False
-                m.error = msg
-        if not ignore_errors:
-            raise
-    finally:
-        for metric in metrics:
-            if metric.skipped:
-                continue
-
-            metric_data = create_metric_data(metric)
-            api_test_case.update_metric_data(metric_data)
-
-        test_end_time = time.perf_counter()
-        run_duration = test_end_time - test_start_time
-        api_test_case.update_run_duration(run_duration)
-
-        ### Update Test Run ###
-        test_run_manager.update_test_run(api_test_case, test_case)
-        test_results.append(create_test_result(api_test_case))
-        update_pbar(progress, pbar_id)
-
-
 async def _a_execute_conversational_test_cases(
-    metrics: List[
-        Union[BaseMetric, BaseMultimodalMetric, BaseConversationalMetric]
-    ],
+    metrics: List[Union[BaseMetric, BaseConversationalMetric]],
     test_case: ConversationalTestCase,
     test_run_manager: TestRunManager,
-    test_results: List[Union[TestResult, MLLMTestCase]],
+    test_results: List[Union[TestResult, LLMTestCase]],
     count: int,
     ignore_errors: bool,
     skip_on_missing_params: bool,
@@ -1053,11 +932,18 @@ async def _a_execute_conversational_test_cases(
         )
 
     except asyncio.CancelledError:
-        msg = (
-            "Timed out/cancelled while evaluating metric. "
-            "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
-            "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
-        )
+        if get_settings().DEEPEVAL_DISABLE_TIMEOUTS:
+            msg = (
+                "Cancelled while evaluating metric. "
+                "(DeepEval timeouts are disabled; this cancellation likely came from upstream orchestration or manual cancellation). "
+                "Set DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            )
+        else:
+            msg = (
+                "Timed out/cancelled while evaluating metric. "
+                "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
+                "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            )
         for m in metrics:
             if getattr(m, "skipped", False):
                 continue
@@ -1167,7 +1053,7 @@ def execute_agentic_test_cases(
                             loop.run_until_complete(
                                 _await_with_outer_deadline(
                                     coro,
-                                    timeout=_per_task_timeout(),
+                                    timeout=get_per_task_timeout_seconds(),
                                 )
                             )
                         else:
@@ -1494,17 +1380,13 @@ def execute_agentic_test_cases(
 
             # run the golden with a timeout
             start_time = time.perf_counter()
-            deadline = _per_task_timeout()
+            deadline = get_per_task_timeout_seconds()
 
             try:
                 run_sync_with_timeout(_run_golden, deadline)
             except (asyncio.TimeoutError, TimeoutError):
                 # mark any not yet finished trace level and span level metrics as timed out.
-                msg = (
-                    f"Timed out after {deadline:.2f}s while executing agentic test case. "
-                    "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
-                    "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
-                )
+                msg = _timeout_msg("executing agentic test case", deadline)
 
                 if current_trace is not None:
                     # Trace-level metrics
@@ -1685,9 +1567,8 @@ async def a_execute_agentic_test_cases(
 
     async def execute_with_semaphore(func: Callable, *args, **kwargs):
         async with semaphore:
-            timeout = _per_task_timeout()
             return await _await_with_outer_deadline(
-                func, *args, timeout=timeout, **kwargs
+                func, *args, timeout=get_per_task_timeout_seconds(), **kwargs
             )
 
     test_run_manager = global_test_run_manager
@@ -1738,7 +1619,7 @@ async def a_execute_agentic_test_cases(
             try:
                 await asyncio.wait_for(
                     asyncio.gather(*tasks),
-                    timeout=_gather_timeout(),
+                    timeout=get_gather_timeout(),
                 )
             except (asyncio.TimeoutError, TimeoutError):
                 # Cancel any still-pending tasks and drain them
@@ -1776,7 +1657,7 @@ async def a_execute_agentic_test_cases(
 async def _a_execute_agentic_test_case(
     golden: Golden,
     test_run_manager: TestRunManager,
-    test_results: List[Union[TestResult, MLLMTestCase]],
+    test_results: List[Union[TestResult, LLMTestCase]],
     count: int,
     verbose_mode: Optional[bool],
     ignore_errors: bool,
@@ -1819,7 +1700,7 @@ async def _a_execute_agentic_test_case(
                     await _await_with_outer_deadline(
                         observed_callback,
                         golden.input,
-                        timeout=_per_task_timeout(),
+                        timeout=get_per_task_timeout_seconds(),
                     )
                 else:
                     observed_callback(golden.input)
@@ -1913,7 +1794,7 @@ async def _a_execute_agentic_test_case(
                 try:
                     await asyncio.wait_for(
                         asyncio.gather(*child_tasks),
-                        timeout=_gather_timeout(),
+                        timeout=get_gather_timeout(),
                     )
                 except (asyncio.TimeoutError, TimeoutError):
                     for t in child_tasks:
@@ -1936,11 +1817,18 @@ async def _a_execute_agentic_test_case(
                     )
     except asyncio.CancelledError:
         # mark any unfinished metrics as cancelled
-        cancel_msg = (
-            "Timed out/cancelled while evaluating agentic test case. "
-            "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
-            "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
-        )
+        if get_settings().DEEPEVAL_DISABLE_TIMEOUTS:
+            cancel_msg = (
+                "Cancelled while evaluating agentic test case. "
+                "(DeepEval timeouts are disabled; this cancellation likely came from upstream orchestration or manual cancellation). "
+                "Set DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            )
+        else:
+            cancel_msg = (
+                "Timed out/cancelled while evaluating agentic test case. "
+                "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
+                "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            )
 
         if trace_metrics:
             for m in trace_metrics:
@@ -2632,8 +2520,9 @@ def a_execute_agentic_test_cases_from_loop(
 
     async def execute_callback_with_semaphore(coroutine: Awaitable):
         async with semaphore:
-            timeout = _per_task_timeout()
-            return await _await_with_outer_deadline(coroutine, timeout=timeout)
+            return await _await_with_outer_deadline(
+                coroutine, timeout=get_per_task_timeout_seconds()
+            )
 
     def evaluate_test_cases(
         progress: Optional[Progress] = None,
@@ -2855,14 +2744,17 @@ def a_execute_agentic_test_cases_from_loop(
                 loop.run_until_complete(
                     asyncio.wait_for(
                         asyncio.gather(*created_tasks, return_exceptions=True),
-                        timeout=_gather_timeout(),
+                        timeout=get_gather_timeout(),
                     )
                 )
 
-            except (asyncio.TimeoutError, TimeoutError):
+            except (asyncio.TimeoutError, TimeoutError) as e:
                 import traceback
 
+                settings = get_settings()
                 pending = [t for t in created_tasks if not t.done()]
+
+                _log_gather_timeout(logger, exc=e, pending=len(pending))
 
                 # Log the elapsed time for each task that was pending
                 for t in pending:
@@ -2871,26 +2763,27 @@ def a_execute_agentic_test_cases_from_loop(
                     elapsed_time = time.perf_counter() - start_time
 
                     # Determine if it was a per task or gather timeout based on task's elapsed time
-                    if elapsed_time >= _per_task_timeout():
-                        timeout_type = "per-task"
+                    if not settings.DEEPEVAL_DISABLE_TIMEOUTS:
+                        timeout_type = (
+                            "per-task"
+                            if elapsed_time >= get_per_task_timeout_seconds()
+                            else "gather"
+                        )
+                        logger.info(
+                            "  - PENDING %s elapsed_time=%.2fs timeout_type=%s meta=%s",
+                            t.get_name(),
+                            elapsed_time,
+                            timeout_type,
+                            meta,
+                        )
                     else:
-                        timeout_type = "gather"
+                        logger.info(
+                            "  - PENDING %s elapsed_time=%.2fs meta=%s",
+                            t.get_name(),
+                            elapsed_time,
+                            meta,
+                        )
 
-                    logger.warning(
-                        f"[deepeval] gather TIMEOUT after {_gather_timeout()}s; "
-                        f"pending={len(pending)} tasks. Timeout type: {timeout_type}. "
-                        f"To give tasks more time, consider increasing "
-                        f"DEEPEVAL_PER_TASK_TIMEOUT_SECONDS for longer task completion time or "
-                        f"DEEPEVAL_TASK_GATHER_BUFFER_SECONDS to allow more time for gathering results."
-                    )
-
-                    # Log pending tasks and their stack traces
-                    logger.info(
-                        "  - PENDING %s elapsed_time=%.2fs meta=%s",
-                        t.get_name(),
-                        elapsed_time,
-                        meta,
-                    )
                     if loop.get_debug() and get_settings().DEEPEVAL_DEBUG_ASYNC:
                         frames = t.get_stack(limit=6)
                         if frames:
@@ -3072,9 +2965,8 @@ async def _a_evaluate_traces(
 
     async def execute_evals_with_semaphore(func: Callable, *args, **kwargs):
         async with semaphore:
-            timeout = _per_task_timeout()
             return await _await_with_outer_deadline(
-                func, *args, timeout=timeout, **kwargs
+                func, *args, timeout=get_per_task_timeout_seconds(), **kwargs
             )
 
     eval_tasks = []
@@ -3122,7 +3014,7 @@ async def _a_evaluate_traces(
     try:
         await asyncio.wait_for(
             asyncio.gather(*eval_tasks),
-            timeout=_gather_timeout(),
+            timeout=get_gather_timeout(),
         )
     except (asyncio.TimeoutError, TimeoutError):
         for t in eval_tasks:
@@ -3152,9 +3044,8 @@ async def _evaluate_test_case_pairs(
 
     async def execute_with_semaphore(func: Callable, *args, **kwargs):
         async with semaphore:
-            timeout = _per_task_timeout()
             return await _await_with_outer_deadline(
-                func, *args, timeout=timeout, **kwargs
+                func, *args, timeout=get_per_task_timeout_seconds(), **kwargs
             )
 
     tasks = []
@@ -3192,7 +3083,7 @@ async def _evaluate_test_case_pairs(
     try:
         await asyncio.wait_for(
             asyncio.gather(*tasks),
-            timeout=_gather_timeout(),
+            timeout=get_gather_timeout(),
         )
     except (asyncio.TimeoutError, TimeoutError):
         # Cancel any still-pending tasks and drain them
@@ -3205,7 +3096,7 @@ async def _evaluate_test_case_pairs(
 
 def _execute_metric(
     metric: BaseMetric,
-    test_case: Union[LLMTestCase, ConversationalTestCase, MLLMTestCase],
+    test_case: Union[LLMTestCase, ConversationalTestCase],
     show_metric_indicator: bool,
     in_component: bool,
     error_config: ErrorConfig,
@@ -3267,8 +3158,8 @@ def log_prompt(
         return
 
     span_hyperparameters = {}
-    prompt_version = prompt.version if is_confident() else None
-    key = f"{prompt.alias}_{prompt_version}"
+    prompt_hash = prompt.hash if is_confident() else None
+    key = f"{prompt.alias}_{prompt_hash}"
     span_hyperparameters[key] = prompt
 
     test_run = test_run_manager.get_test_run()
@@ -3281,12 +3172,10 @@ def log_prompt(
         test_run.hyperparameters.update(
             process_hyperparameters(span_hyperparameters, False)
         )
-        existing_prompt_keys = {
-            f"{p.alias}_{p.version}" for p in test_run.prompts
-        }
+        existing_prompt_keys = {f"{p.alias}_{p.hash}" for p in test_run.prompts}
         new_prompts = process_prompts(span_hyperparameters)
         for new_prompt in new_prompts:
-            new_prompt_key = f"{new_prompt.alias}_{new_prompt.version}"
+            new_prompt_key = f"{new_prompt.alias}_{new_prompt.hash}"
             if new_prompt_key not in existing_prompt_keys:
                 test_run.prompts.append(new_prompt)
 

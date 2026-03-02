@@ -1,0 +1,1873 @@
+{
+  "uuid": "52f9def8-f08b-4bab-a4b5-83b2acbd1a10",
+  "baseSpans": [
+    {
+      "uuid": "019bf9bf-49c8-76f3-8655-ade39141db77",
+      "name": "LangGraph",
+      "status": "SUCCESS",
+      "type": "base",
+      "startTime": "2026-01-26T10:00:21.704Z",
+      "endTime": "2026-01-26T10:00:23.613Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Add 5 apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 248,
+                "total_tokens": 277,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+            "tool_calls": [
+              {
+                "name": "add_to_cart",
+                "args": {
+                  "item": "apples",
+                  "quantity": 5
+                },
+                "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 248,
+              "output_tokens": 29,
+              "total_tokens": 277,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Added 5x apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "add_to_cart",
+            "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+            "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "status": "success"
+          },
+          {
+            "content": "Done \u2014 5 apples added to your cart. Anything else?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 16,
+                "prompt_tokens": 290,
+                "total_tokens": 306,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 290,
+              "output_tokens": 16,
+              "total_tokens": 306,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 318,
+                "total_tokens": 344,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+            "tool_calls": [
+              {
+                "name": "apply_coupon",
+                "args": {
+                  "code": "FREESHIP"
+                },
+                "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 318,
+              "output_tokens": 26,
+              "total_tokens": 344,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Free shipping applied",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "apply_coupon",
+            "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+            "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+            "status": "success"
+          },
+          {
+            "content": "Coupon applied \u2014 FREESHIP is now on your order. Want to checkout or keep shopping?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 22,
+                "prompt_tokens": 352,
+                "total_tokens": 374,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgNgN8Cx91JTyAJ6Av87lvp12a7",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4e49-7242-a171-483027f1c91f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 352,
+              "output_tokens": 22,
+              "total_tokens": 374,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019bf9bf-4e48-7c53-9357-1b9db4843b9c",
+      "name": "agent",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bf9bf-49c8-76f3-8655-ade39141db77",
+      "startTime": "2026-01-26T10:00:22.856Z",
+      "endTime": "2026-01-26T10:00:23.612Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Add 5 apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 248,
+                "total_tokens": 277,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+            "tool_calls": [
+              {
+                "name": "add_to_cart",
+                "args": {
+                  "item": "apples",
+                  "quantity": 5
+                },
+                "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 248,
+              "output_tokens": 29,
+              "total_tokens": 277,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Added 5x apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "add_to_cart",
+            "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+            "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "status": "success"
+          },
+          {
+            "content": "Done \u2014 5 apples added to your cart. Anything else?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 16,
+                "prompt_tokens": 290,
+                "total_tokens": 306,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 290,
+              "output_tokens": 16,
+              "total_tokens": 306,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 318,
+                "total_tokens": 344,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+            "tool_calls": [
+              {
+                "name": "apply_coupon",
+                "args": {
+                  "code": "FREESHIP"
+                },
+                "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 318,
+              "output_tokens": 26,
+              "total_tokens": 344,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Free shipping applied",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "apply_coupon",
+            "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+            "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+            "status": "success"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Coupon applied \u2014 FREESHIP is now on your order. Want to checkout or keep shopping?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 22,
+                "prompt_tokens": 352,
+                "total_tokens": 374,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgNgN8Cx91JTyAJ6Av87lvp12a7",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4e49-7242-a171-483027f1c91f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 352,
+              "output_tokens": 22,
+              "total_tokens": 374,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019bf9bf-513b-7bb0-b0ed-0e87a6a3bc33",
+      "name": "should_continue",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bf9bf-4e48-7c53-9357-1b9db4843b9c",
+      "startTime": "2026-01-26T10:00:23.611Z",
+      "endTime": "2026-01-26T10:00:23.611Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Add 5 apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 248,
+                "total_tokens": 277,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+            "tool_calls": [
+              {
+                "name": "add_to_cart",
+                "args": {
+                  "item": "apples",
+                  "quantity": 5
+                },
+                "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 248,
+              "output_tokens": 29,
+              "total_tokens": 277,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Added 5x apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "add_to_cart",
+            "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+            "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "status": "success"
+          },
+          {
+            "content": "Done \u2014 5 apples added to your cart. Anything else?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 16,
+                "prompt_tokens": 290,
+                "total_tokens": 306,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 290,
+              "output_tokens": 16,
+              "total_tokens": 306,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 318,
+                "total_tokens": 344,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+            "tool_calls": [
+              {
+                "name": "apply_coupon",
+                "args": {
+                  "code": "FREESHIP"
+                },
+                "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 318,
+              "output_tokens": 26,
+              "total_tokens": 344,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Free shipping applied",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "apply_coupon",
+            "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+            "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+            "status": "success"
+          },
+          {
+            "content": "Coupon applied \u2014 FREESHIP is now on your order. Want to checkout or keep shopping?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 22,
+                "prompt_tokens": 352,
+                "total_tokens": 374,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgNgN8Cx91JTyAJ6Av87lvp12a7",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4e49-7242-a171-483027f1c91f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 352,
+              "output_tokens": 22,
+              "total_tokens": 374,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      },
+      "output": "__end__"
+    },
+    {
+      "uuid": "019bf9bf-4e45-7902-a53a-d788c9f88849",
+      "name": "tools",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bf9bf-49c8-76f3-8655-ade39141db77",
+      "startTime": "2026-01-26T10:00:22.854Z",
+      "endTime": "2026-01-26T10:00:22.855Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Add 5 apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 248,
+                "total_tokens": 277,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+            "tool_calls": [
+              {
+                "name": "add_to_cart",
+                "args": {
+                  "item": "apples",
+                  "quantity": 5
+                },
+                "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 248,
+              "output_tokens": 29,
+              "total_tokens": 277,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Added 5x apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "add_to_cart",
+            "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+            "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "status": "success"
+          },
+          {
+            "content": "Done \u2014 5 apples added to your cart. Anything else?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 16,
+                "prompt_tokens": 290,
+                "total_tokens": 306,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 290,
+              "output_tokens": 16,
+              "total_tokens": 306,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 318,
+                "total_tokens": 344,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+            "tool_calls": [
+              {
+                "name": "apply_coupon",
+                "args": {
+                  "code": "FREESHIP"
+                },
+                "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 318,
+              "output_tokens": 26,
+              "total_tokens": 344,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Free shipping applied",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "apply_coupon",
+            "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+            "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+            "status": "success"
+          }
+        ]
+      },
+      "toolsCalled": [
+        {
+          "name": "apply_coupon",
+          "output": {
+            "content": "Free shipping applied",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "apply_coupon",
+            "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+            "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+            "status": "success"
+          },
+          "inputParameters": {
+            "code": "FREESHIP"
+          }
+        }
+      ]
+    },
+    {
+      "uuid": "019bf9bf-49c9-7513-95fc-f0fd573caba6",
+      "name": "agent",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bf9bf-49c8-76f3-8655-ade39141db77",
+      "startTime": "2026-01-26T10:00:21.706Z",
+      "endTime": "2026-01-26T10:00:22.853Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Add 5 apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 248,
+                "total_tokens": 277,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+            "tool_calls": [
+              {
+                "name": "add_to_cart",
+                "args": {
+                  "item": "apples",
+                  "quantity": 5
+                },
+                "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 248,
+              "output_tokens": 29,
+              "total_tokens": 277,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Added 5x apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "add_to_cart",
+            "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+            "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "status": "success"
+          },
+          {
+            "content": "Done \u2014 5 apples added to your cart. Anything else?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 16,
+                "prompt_tokens": 290,
+                "total_tokens": 306,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 290,
+              "output_tokens": 16,
+              "total_tokens": 306,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 318,
+                "total_tokens": 344,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+            "tool_calls": [
+              {
+                "name": "apply_coupon",
+                "args": {
+                  "code": "FREESHIP"
+                },
+                "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 318,
+              "output_tokens": 26,
+              "total_tokens": 344,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019bf9bf-4e44-72b3-826a-f7c362ecc760",
+      "name": "should_continue",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bf9bf-49c9-7513-95fc-f0fd573caba6",
+      "startTime": "2026-01-26T10:00:22.852Z",
+      "endTime": "2026-01-26T10:00:22.852Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Add 5 apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 29,
+                "prompt_tokens": 248,
+                "total_tokens": 277,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+            "tool_calls": [
+              {
+                "name": "add_to_cart",
+                "args": {
+                  "item": "apples",
+                  "quantity": 5
+                },
+                "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 248,
+              "output_tokens": 29,
+              "total_tokens": 277,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Added 5x apples to cart",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "add_to_cart",
+            "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+            "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "status": "success"
+          },
+          {
+            "content": "Done \u2014 5 apples added to your cart. Anything else?",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 16,
+                "prompt_tokens": 290,
+                "total_tokens": 306,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 290,
+              "output_tokens": 16,
+              "total_tokens": 306,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Apply FREESHIP coupon",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 318,
+                "total_tokens": 344,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+            "tool_calls": [
+              {
+                "name": "apply_coupon",
+                "args": {
+                  "code": "FREESHIP"
+                },
+                "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 318,
+              "output_tokens": 26,
+              "total_tokens": 344,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      },
+      "output": "tools"
+    }
+  ],
+  "agentSpans": [],
+  "llmSpans": [
+    {
+      "uuid": "019bf9bf-4e49-7242-a171-483027f1c91f",
+      "name": "ChatOpenAI",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "019bf9bf-4e48-7c53-9357-1b9db4843b9c",
+      "startTime": "2026-01-26T10:00:22.857Z",
+      "endTime": "2026-01-26T10:00:23.610Z",
+      "input": [
+        {
+          "role": "human",
+          "content": "You are a helpful shopping assistant. Help users manage their cart and checkout."
+        },
+        {
+          "role": "human",
+          "content": "Add 5 apples to cart"
+        },
+        {
+          "role": "ai",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Added 5x apples to cart"
+        },
+        {
+          "role": "ai",
+          "content": "Done \u2014 5 apples added to your cart. Anything else?"
+        },
+        {
+          "role": "human",
+          "content": "Apply FREESHIP coupon"
+        },
+        {
+          "role": "ai",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Free shipping applied"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'add_to_cart', 'description': 'Add an item to the shopping cart.', 'parameters': {'properties': {'item': {'type': 'string'}, 'quantity': {'default': 1, 'type': 'integer'}}, 'required': ['item'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'remove_from_cart', 'description': 'Remove an item from the shopping cart.', 'parameters': {'properties': {'item': {'type': 'string'}}, 'required': ['item'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'view_cart', 'description': 'View the current shopping cart contents.', 'parameters': {'properties': {}, 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'apply_coupon', 'description': 'Apply a coupon code to the cart.', 'parameters': {'properties': {'code': {'type': 'string'}}, 'required': ['code'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'checkout', 'description': 'Proceed to checkout.', 'parameters': {'properties': {}, 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'confirm_order', 'description': 'Confirm and place the order.', 'parameters': {'properties': {}, 'type': 'object'}}}"
+        }
+      ],
+      "output": {
+        "role": "AI",
+        "content": "Coupon applied \u2014 FREESHIP is now on your order. Want to checkout or keep shopping?",
+        "tool_calls": []
+      },
+      "model": "gpt-5-mini-2025-08-07",
+      "inputTokenCount": 352.0,
+      "outputTokenCount": 22.0
+    },
+    {
+      "uuid": "019bf9bf-49ca-7b01-85a4-29e8c164a43b",
+      "name": "ChatOpenAI",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "019bf9bf-49c9-7513-95fc-f0fd573caba6",
+      "startTime": "2026-01-26T10:00:21.706Z",
+      "endTime": "2026-01-26T10:00:22.851Z",
+      "input": [
+        {
+          "role": "human",
+          "content": "You are a helpful shopping assistant. Help users manage their cart and checkout."
+        },
+        {
+          "role": "human",
+          "content": "Add 5 apples to cart"
+        },
+        {
+          "role": "ai",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Added 5x apples to cart"
+        },
+        {
+          "role": "ai",
+          "content": "Done \u2014 5 apples added to your cart. Anything else?"
+        },
+        {
+          "role": "human",
+          "content": "Apply FREESHIP coupon"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'add_to_cart', 'description': 'Add an item to the shopping cart.', 'parameters': {'properties': {'item': {'type': 'string'}, 'quantity': {'default': 1, 'type': 'integer'}}, 'required': ['item'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'remove_from_cart', 'description': 'Remove an item from the shopping cart.', 'parameters': {'properties': {'item': {'type': 'string'}}, 'required': ['item'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'view_cart', 'description': 'View the current shopping cart contents.', 'parameters': {'properties': {}, 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'apply_coupon', 'description': 'Apply a coupon code to the cart.', 'parameters': {'properties': {'code': {'type': 'string'}}, 'required': ['code'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'checkout', 'description': 'Proceed to checkout.', 'parameters': {'properties': {}, 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'confirm_order', 'description': 'Confirm and place the order.', 'parameters': {'properties': {}, 'type': 'object'}}}"
+        }
+      ],
+      "output": {
+        "role": "AI",
+        "content": "",
+        "tool_calls": [
+          {
+            "name": "apply_coupon",
+            "args": {
+              "code": "FREESHIP"
+            },
+            "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo"
+          }
+        ]
+      },
+      "model": "gpt-5-mini-2025-08-07",
+      "inputTokenCount": 318.0,
+      "outputTokenCount": 26.0
+    }
+  ],
+  "retrieverSpans": [],
+  "toolSpans": [
+    {
+      "uuid": "019bf9bf-4e46-7c72-98bc-dfcc6765b3b4",
+      "name": "apply_coupon",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019bf9bf-4e45-7902-a53a-d788c9f88849",
+      "startTime": "2026-01-26T10:00:22.854Z",
+      "endTime": "2026-01-26T10:00:22.855Z",
+      "input": {
+        "code": "FREESHIP"
+      },
+      "output": {
+        "content": "Free shipping applied",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "apply_coupon",
+        "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+        "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+        "status": "success"
+      }
+    }
+  ],
+  "startTime": "2026-01-26T10:00:21.704Z",
+  "endTime": "2026-01-26T10:00:23.613Z",
+  "name": "langgraph-async-multi-2",
+  "tags": [
+    "langgraph",
+    "async",
+    "multi-turn"
+  ],
+  "environment": "development",
+  "threadId": "async-shopping-001",
+  "input": {
+    "messages": [
+      {
+        "content": "Apply FREESHIP coupon",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+      }
+    ]
+  },
+  "output": {
+    "messages": [
+      {
+        "content": "Add 5 apples to cart",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "217a5ecc-3665-4fa8-a318-9cce2c1a58c3"
+      },
+      {
+        "content": "",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 29,
+            "prompt_tokens": 248,
+            "total_tokens": 277,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2DgJNdHorEcBY4M9fbO7wp7XA8NT",
+          "service_tier": "default",
+          "finish_reason": "tool_calls",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019bf9bf-40fd-7dc0-8396-3eff52bac0cd-0",
+        "tool_calls": [
+          {
+            "name": "add_to_cart",
+            "args": {
+              "item": "apples",
+              "quantity": 5
+            },
+            "id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+            "type": "tool_call"
+          }
+        ],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 248,
+          "output_tokens": 29,
+          "total_tokens": 277,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      },
+      {
+        "content": "Added 5x apples to cart",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "add_to_cart",
+        "id": "4d13b77a-c8a1-4856-8ae4-27294bcd4d23",
+        "tool_call_id": "call_oW0zcrHHXJ1TyFdvjxGYzVrM",
+        "status": "success"
+      },
+      {
+        "content": "Done \u2014 5 apples added to your cart. Anything else?",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 16,
+            "prompt_tokens": 290,
+            "total_tokens": 306,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2DgLHHPHxvGX47j256zl6SEpLQur",
+          "service_tier": "default",
+          "finish_reason": "stop",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019bf9bf-4700-7c21-a820-1dd919bb6b0f-0",
+        "tool_calls": [],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 290,
+          "output_tokens": 16,
+          "total_tokens": 306,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      },
+      {
+        "content": "Apply FREESHIP coupon",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "b60e0921-ef63-4baa-a842-a94b22a5aaf7"
+      },
+      {
+        "content": "",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 26,
+            "prompt_tokens": 318,
+            "total_tokens": 344,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2DgLVAzzoTJjBeeC3GHFtDFK10o8",
+          "service_tier": "default",
+          "finish_reason": "tool_calls",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019bf9bf-49ca-7b01-85a4-29e8c164a43b-0",
+        "tool_calls": [
+          {
+            "name": "apply_coupon",
+            "args": {
+              "code": "FREESHIP"
+            },
+            "id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+            "type": "tool_call"
+          }
+        ],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 318,
+          "output_tokens": 26,
+          "total_tokens": 344,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      },
+      {
+        "content": "Free shipping applied",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "apply_coupon",
+        "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+        "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+        "status": "success"
+      },
+      {
+        "content": "Coupon applied \u2014 FREESHIP is now on your order. Want to checkout or keep shopping?",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 22,
+            "prompt_tokens": 352,
+            "total_tokens": 374,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2DgNgN8Cx91JTyAJ6Av87lvp12a7",
+          "service_tier": "default",
+          "finish_reason": "stop",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019bf9bf-4e49-7242-a171-483027f1c91f-0",
+        "tool_calls": [],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 352,
+          "output_tokens": 22,
+          "total_tokens": 374,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      }
+    ]
+  },
+  "status": "SUCCESS",
+  "toolsCalled": [
+    {
+      "name": "apply_coupon",
+      "output": {
+        "content": "Free shipping applied",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "apply_coupon",
+        "id": "ac08b58e-cb41-4afb-8c67-58ad8033d81b",
+        "tool_call_id": "call_sSIYuNWsgW1vjuMQ7JM2esAo",
+        "status": "success"
+      },
+      "inputParameters": {
+        "code": "FREESHIP"
+      }
+    }
+  ]
+}

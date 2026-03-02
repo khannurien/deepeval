@@ -14,6 +14,7 @@ import logging
 
 from contextvars import ContextVar
 from enum import Enum
+from importlib import import_module
 from typing import Any, Dict, List, Optional, Protocol, Sequence, Union
 from collections.abc import Iterable
 from dataclasses import asdict, is_dataclass
@@ -265,6 +266,32 @@ def set_should_use_cache(yes: bool):
     s = get_settings()
     with s.edit(persist=False):
         s.ENABLE_DEEPEVAL_CACHE = yes
+
+
+###################
+# Timeout Helpers #
+###################
+def are_timeouts_disabled() -> bool:
+    return bool(get_settings().DEEPEVAL_DISABLE_TIMEOUTS)
+
+
+def get_per_task_timeout_seconds() -> float:
+    return get_settings().DEEPEVAL_PER_TASK_TIMEOUT_SECONDS
+
+
+def get_per_task_timeout() -> Optional[float]:
+    return None if are_timeouts_disabled() else get_per_task_timeout_seconds()
+
+
+def get_gather_timeout_seconds() -> float:
+    return (
+        get_per_task_timeout_seconds()
+        + get_settings().DEEPEVAL_TASK_GATHER_BUFFER_SECONDS
+    )
+
+
+def get_gather_timeout() -> Optional[float]:
+    return None if are_timeouts_disabled() else get_gather_timeout_seconds()
 
 
 def login(api_key: str):
@@ -537,6 +564,25 @@ def shorten(
     return stext[:cut] + suffix
 
 
+def convert_to_multi_modal_array(input: Union[str, List[str]]):
+    from deepeval.test_case import MLLMImage
+
+    if isinstance(input, str):
+        return MLLMImage.parse_multimodal_string(input)
+    elif isinstance(input, list):
+        new_list = []
+        for context in input:
+            parsed_array = MLLMImage.parse_multimodal_string(context)
+            new_list.extend(parsed_array)
+        return new_list
+
+
+def check_if_multimodal(input: str):
+    pattern = r"\[DEEPEVAL:IMAGE:(.*?)\]"
+    matches = list(re.finditer(pattern, input))
+    return bool(matches)
+
+
 def format_turn(
     turn: TurnLike,
     *,
@@ -693,14 +739,29 @@ def update_pbar(
     if progress is None or pbar_id is None:
         return
     # Get amount to advance
-    current_task = next(t for t in progress.tasks if t.id == pbar_id)
+    current_task = next((t for t in progress.tasks if t.id == pbar_id), None)
+    if current_task is None:
+        return
+
     if advance_to_end:
-        advance = current_task.remaining
+        remaining = current_task.remaining
+        if remaining is not None:
+            advance = remaining
+
     # Advance
-    progress.update(pbar_id, advance=advance, total=total)
-    # Remove if finished
-    if current_task.finished and remove:
-        progress.remove_task(pbar_id)
+    try:
+        progress.update(pbar_id, advance=advance, total=total)
+    except KeyError:
+        # progress task may be removed concurrently via callbacks which can race with teardown.
+        return
+
+    # Remove if finished and refetch before remove to avoid acting on a stale object
+    updated_task = next((t for t in progress.tasks if t.id == pbar_id), None)
+    if updated_task is not None and updated_task.finished and remove:
+        try:
+            progress.remove_task(pbar_id)
+        except KeyError:
+            pass
 
 
 def add_pbar(progress: Optional[Progress], description: str, total: int = 1):
@@ -829,7 +890,22 @@ def require_param(
     env_var_name: str,
     param_hint: str,
 ) -> Any:
+    """
+    Ensures that a required parameter is provided. If the parameter is `None`, raises a
+    `DeepEvalError` with a helpful message indicating the missing parameter and how to resolve it.
 
+    Args:
+        param (Optional[Any]): The parameter to validate.
+        provider_label (str): A label for the provider to be used in the error message.
+        env_var_name (str): The name of the environment variable where the parameter can be set.
+        param_hint (str): A hint for the parameter, usually the name of the argument.
+
+    Raises:
+        DeepEvalError: If the `param` is `None`, indicating that a required parameter is missing.
+
+    Returns:
+        Any: The value of `param` if it is provided.
+    """
     if param is None:
         raise DeepEvalError(
             f"{provider_label} is missing a required parameter. "
@@ -838,3 +914,33 @@ def require_param(
         )
 
     return param
+
+
+def require_dependency(
+    module_name: str,
+    *,
+    provider_label: str,
+    install_hint: Optional[str] = None,
+) -> Any:
+    """
+    Imports an optional dependency module or raises a `DeepEvalError` if the module is not found.
+    The error message includes a suggestion on how to install the missing module.
+
+    Args:
+        module_name (str): The name of the module to import.
+        provider_label (str): A label for the provider to be used in the error message.
+        install_hint (Optional[str]): A hint on how to install the missing module, usually a pip command.
+
+    Raises:
+        DeepEvalError: If the module cannot be imported, indicating that the dependency is missing.
+
+    Returns:
+        Any: The imported module if successful.
+    """
+    try:
+        return import_module(module_name)
+    except ImportError as exc:
+        hint = install_hint or f"Install it with `pip install {module_name}`."
+        raise DeepEvalError(
+            f"{provider_label} requires the `{module_name}` package. {hint}"
+        ) from exc

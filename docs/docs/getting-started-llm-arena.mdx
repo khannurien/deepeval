@@ -4,11 +4,11 @@ title: LLM Arena Evaluation Quickstart
 sidebar_label: LLM Arena
 ---
 
-import { Timeline, TimelineItem } from "@site/src/components/Timeline";
-import NavigationCards from "@site/src/components/NavigationCards";
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
-import VideoDisplayer from "@site/src/components/VideoDisplayer";
+import { Timeline, TimelineItem } from '@site/src/components/Timeline';
+import NavigationCards from '@site/src/components/NavigationCards';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VideoDisplayer from '@site/src/components/VideoDisplayer';
 
 Learn how to evaluate different versions of your LLM app using LLM Arena-as-a-Judge in `deepeval`, a comparison-based LLM eval.
 
@@ -97,7 +97,7 @@ task_completion_metric = ArenaGEval(model=model)
 from deepeval.metrics import ArenaGEval
 from deepeval.models import GrokModel
 
-model = GrokModel("grok-4-0709")
+model = GrokModel("grok-4.1")
 task_completion_metric = ArenaGEval(model=model)
 ```
 
@@ -110,11 +110,11 @@ from deepeval.metrics import ArenaGEval
 from deepeval.models import AzureOpenAIModel
 
 model = AzureOpenAIModel(
-    model_name="gpt-4.1",
+    model="gpt-4.1",
     deployment_name="Test Deployment",
-    azure_openai_api_key="Your Azure OpenAI API Key",
-    openai_api_version="2025-01-01-preview",
-    azure_endpoint="https://example-resource.azure.openai.com/",
+    api_key="Your Azure OpenAI API Key",
+    api_version="2025-01-01-preview",
+    base_url="https://example-resource.azure.openai.com/",
     temperature=0
 )
 task_completion_metric = ArenaGEval(model=model)
@@ -129,8 +129,9 @@ from deepeval.metrics import ArenaGEval
 from deepeval.models import AmazonBedrockModel
 
 model = AmazonBedrockModel(
-    model_id="anthropic.claude-3-opus-20240229-v1:0",
-    temperature=0
+    model="anthropic.claude-3-opus-20240229-v1:0",
+    region="us-east-1",
+    generation_kwargs={"temperature": 0},
 )
 task_completion_metric = ArenaGEval(model=model)
 ```
@@ -144,7 +145,7 @@ from deepeval.metrics import ArenaGEval
 from deepeval.models import GeminiModel
 
 model = GeminiModel(
-    model_name="gemini-1.5-pro",
+    model="gemini-1.5-pro",
     project="Your Project ID",
     location="us-central1",
     temperature=0
@@ -252,7 +253,7 @@ compare(test_cases=[test_case], metric=arena_geval)
 You can optionally log prompts and models for each contestant through `hyperparameters` dictionary in the `compare()` function. This will allow you to easily attribute winning contestants to their corresponding hyperparameters.
 
 ```python
-from deepeval.prompts import Prompt
+from deepeval.prompt import Prompt
 
 prompt_1 = Prompt(
     alias="First Prompt",
@@ -313,7 +314,7 @@ If you've set your `CONFIDENT_API_KEY`, your arena comparisons will automaticall
 
 ## Next Steps
 
-`deepeval` lets you run Arena comparisons locally but isn’t optimized for iterative prompt or model improvements. If you’re looking for a more comprehensive and streamlined way to run Arena comparisons, [**Confident AI**](https://app.confident-ai.com) (DeepEval Cloud) enables you to easily test different prompts, models, tools, and output configurations **side by side**, and evaluate them using any `deepeval` metric beyond `ArenaGEval`—all directly on the platform.
+`deepeval` lets you run Arena comparisons locally but isn’t optimized for iterative prompt or model improvements. If you’re looking for a more comprehensive and streamlined way to run Arena comparisons, [**Confident AI**](https://app.confident-ai.com) enables you to easily test different prompts, models, tools, and output configurations **side by side**, and evaluate them using any `deepeval` metric beyond `ArenaGEval`—all directly on the platform.
 
 <Tabs>
 <TabItem value="quick-run" label="Quick Comparisons">
@@ -381,34 +382,34 @@ The arena metric is only used for picking winners among the contestants, it's no
   columns={3}
   items={[
     {
-      title: "AI Agents",
-      icon: "Bot",
+      title: 'AI Agents',
+      icon: 'Bot',
       listDescription: [
-        "Setup LLM tracing",
-        "Test end-to-end task completion",
-        "Evaluate individual components",
+        'Setup LLM tracing',
+        'Test end-to-end task completion',
+        'Evaluate individual components',
       ],
-      to: "/docs/getting-started-agents",
+      to: '/docs/getting-started-agents',
     },
     {
-      title: "RAG",
-      icon: "FileSearch",
+      title: 'RAG',
+      icon: 'FileSearch',
       listDescription: [
-        "Evaluate RAG end-to-end",
-        "Test retriever and generator separately",
-        "Multi-turn RAG evals",
+        'Evaluate RAG end-to-end',
+        'Test retriever and generator separately',
+        'Multi-turn RAG evals',
       ],
-      to: "/docs/getting-started-rag",
+      to: '/docs/getting-started-rag',
     },
     {
-      title: "Chatbots",
-      icon: "MessagesSquare",
+      title: 'Chatbots',
+      icon: 'MessagesSquare',
       listDescription: [
-        "Setup multi-turn test cases",
-        "Evaluate turns in a conversation",
-        "Simulate user interactions",
+        'Setup multi-turn test cases',
+        'Evaluate turns in a conversation',
+        'Simulate user interactions',
       ],
-      to: "/docs/getting-started-chatbots",
+      to: '/docs/getting-started-chatbots',
     },
   ]}
 />

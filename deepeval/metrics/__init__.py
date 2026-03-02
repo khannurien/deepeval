@@ -1,7 +1,6 @@
 from .base_metric import (
     BaseMetric,
     BaseConversationalMetric,
-    BaseMultimodalMetric,
     BaseArenaMetric,
 )
 
@@ -42,6 +41,16 @@ from .mcp_use_metric.mcp_use_metric import MCPUseMetric
 from .turn_relevancy.turn_relevancy import (
     TurnRelevancyMetric,
 )
+from .turn_faithfulness.turn_faithfulness import TurnFaithfulnessMetric
+from .turn_contextual_precision.turn_contextual_precision import (
+    TurnContextualPrecisionMetric,
+)
+from .turn_contextual_recall.turn_contextual_recall import (
+    TurnContextualRecallMetric,
+)
+from .turn_contextual_relevancy.turn_contextual_relevancy import (
+    TurnContextualRelevancyMetric,
+)
 from .conversation_completeness.conversation_completeness import (
     ConversationCompletenessMetric,
 )
@@ -55,13 +64,6 @@ from .multimodal_metrics import (
     ImageCoherenceMetric,
     ImageHelpfulnessMetric,
     ImageReferenceMetric,
-    MultimodalContextualRecallMetric,
-    MultimodalContextualRelevancyMetric,
-    MultimodalContextualPrecisionMetric,
-    MultimodalAnswerRelevancyMetric,
-    MultimodalFaithfulnessMetric,
-    MultimodalToolCorrectnessMetric,
-    MultimodalGEval,
 )
 
 
@@ -69,7 +71,6 @@ __all__ = [
     # Base classes
     "BaseMetric",
     "BaseConversationalMetric",
-    "BaseMultimodalMetric",
     "BaseArenaMetric",
     # Non-LLM metrics
     "ExactMatchMetric",
@@ -119,17 +120,14 @@ __all__ = [
     # Conversational metrics
     "TurnRelevancyMetric",
     "ConversationCompletenessMetric",
+    "TurnFaithfulnessMetric",
+    "TurnContextualPrecisionMetric",
+    "TurnContextualRecallMetric",
+    "TurnContextualRelevancyMetric",
     # Multimodal metrics
     "TextToImageMetric",
     "ImageEditingMetric",
     "ImageCoherenceMetric",
     "ImageHelpfulnessMetric",
     "ImageReferenceMetric",
-    "MultimodalContextualRecallMetric",
-    "MultimodalContextualRelevancyMetric",
-    "MultimodalContextualPrecisionMetric",
-    "MultimodalAnswerRelevancyMetric",
-    "MultimodalFaithfulnessMetric",
-    "MultimodalToolCorrectnessMetric",
-    "MultimodalGEval",
 ]

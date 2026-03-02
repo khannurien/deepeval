@@ -1,13 +1,14 @@
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Tuple
 
 from deepeval.metrics.indicator import metric_progress_indicator
-from deepeval.utils import get_or_create_event_loop, prettify_list
+from deepeval.utils import get_or_create_event_loop
 from deepeval.metrics.utils import (
     construct_verbose_logs,
     check_llm_test_case_params,
-    trimAndLoadJson,
     initialize_model,
     print_tools_called,
+    a_generate_with_schema_and_extract,
+    generate_with_schema_and_extract,
 )
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.test_case import (
@@ -62,7 +63,15 @@ class ToolCorrectnessMetric(BaseMetric):
         _log_metric_to_confident: bool = True,
     ) -> float:
 
-        check_llm_test_case_params(test_case, self._required_params, self)
+        check_llm_test_case_params(
+            test_case,
+            self._required_params,
+            None,
+            None,
+            self,
+            self.model,
+            test_case.multimodal,
+        )
         self.test_case = test_case
         self.evaluation_cost = 0 if self.using_native_model else None
 
@@ -83,18 +92,16 @@ class ToolCorrectnessMetric(BaseMetric):
                 self.tools_called: List[ToolCall] = test_case.tools_called
                 self.expected_tools: List[ToolCall] = test_case.expected_tools
                 tool_calling_score = self._calculate_score()
-                if self.available_tools:
+                if self.available_tools and not test_case.multimodal:
                     tool_selection_score = self._get_tool_selection_score(
                         test_case.input,
                         test_case.tools_called,
                         self.available_tools,
                     )
                 else:
-                    tool_selection_score = tool_selection_score = (
-                        ToolSelectionScore(
-                            score=1,
-                            reason="No available tools were provided to assess tool selection criteria",
-                        )
+                    tool_selection_score = ToolSelectionScore(
+                        score=1,
+                        reason="No available tools were provided to assess tool selection criteria",
                     )
                 score = min(tool_calling_score, tool_selection_score.score)
                 self.score = (
@@ -165,7 +172,15 @@ class ToolCorrectnessMetric(BaseMetric):
         _in_component: bool = False,
         _log_metric_to_confident: bool = True,
     ) -> float:
-        check_llm_test_case_params(test_case, self._required_params, self)
+        check_llm_test_case_params(
+            test_case,
+            self._required_params,
+            None,
+            None,
+            self,
+            self.model,
+            test_case.multimodal,
+        )
 
         self.evaluation_cost = 0 if self.using_native_model else None
         with metric_progress_indicator(
@@ -177,7 +192,7 @@ class ToolCorrectnessMetric(BaseMetric):
             self.tools_called: List[ToolCall] = test_case.tools_called
             self.expected_tools: List[ToolCall] = test_case.expected_tools
             tool_calling_score = self._calculate_score()
-            if self.available_tools:
+            if self.available_tools and not test_case.multimodal:
                 tool_selection_score = await self._a_get_tool_selection_score(
                     test_case.input,
                     test_case.tools_called,
@@ -324,18 +339,13 @@ class ToolCorrectnessMetric(BaseMetric):
         prompt = ToolCorrectnessTemplate.get_tool_selection_score(
             user_input, tools_called_formatted, available_tools_formatted
         )
-        if self.using_native_model:
-            res, cost = self.model.generate(prompt, schema=ToolSelectionScore)
-            self.evaluation_cost += cost
-            return res
-        else:
-            try:
-                res = self.model.generate(prompt, schema=ToolSelectionScore)
-                return res
-            except TypeError:
-                res = self.model.generate(prompt)
-                data = trimAndLoadJson(res, self)
-                return ToolSelectionScore(**data)
+        return generate_with_schema_and_extract(
+            metric=self,
+            prompt=prompt,
+            schema_cls=ToolSelectionScore,
+            extract_schema=lambda s: s,
+            extract_json=lambda data: ToolSelectionScore(**data),
+        )
 
     async def _a_get_tool_selection_score(
         self, user_input, tools_called, available_tools
@@ -345,25 +355,16 @@ class ToolCorrectnessMetric(BaseMetric):
         prompt = ToolCorrectnessTemplate.get_tool_selection_score(
             user_input, tools_called_formatted, available_tools_formatted
         )
-        if self.using_native_model:
-            res, cost = await self.model.a_generate(
-                prompt, schema=ToolSelectionScore
-            )
-            self.evaluation_cost += cost
-            return res
-        else:
-            try:
-                res = await self.model.a_generate(
-                    prompt, schema=ToolSelectionScore
-                )
-                return res
-            except TypeError:
-                res = await self.model.a_generate(prompt)
-                data = trimAndLoadJson(res, self)
-                return ToolSelectionScore(**data)
+        return await a_generate_with_schema_and_extract(
+            metric=self,
+            prompt=prompt,
+            schema_cls=ToolSelectionScore,
+            extract_schema=lambda s: s,
+            extract_json=lambda data: ToolSelectionScore(**data),
+        )
 
     # Calculate score
-    def _calculate_score(self):
+    def _calculate_score(self) -> float:
         if self.should_exact_match:
             score = self._calculate_exact_match_score()
         elif self.should_consider_ordering:
@@ -382,7 +383,7 @@ class ToolCorrectnessMetric(BaseMetric):
         return 0 if self.strict_mode and score < self.threshold else score
 
     # Exact matching score
-    def _calculate_exact_match_score(self):
+    def _calculate_exact_match_score(self) -> float:
         if len(self.tools_called) != len(self.expected_tools):
             return 0.0
         if (
@@ -405,7 +406,7 @@ class ToolCorrectnessMetric(BaseMetric):
         return 1.0
 
     # Non exact matching score
-    def _calculate_non_exact_match_score(self):
+    def _calculate_non_exact_match_score(self) -> float:
         total_score = 0.0
         matched_called_tools = set()
         for expected_tool in self.expected_tools:
@@ -445,7 +446,7 @@ class ToolCorrectnessMetric(BaseMetric):
         )
 
     # Consider ordering score
-    def _compute_weighted_lcs(self):
+    def _compute_weighted_lcs(self) -> Tuple[List[ToolCall], float]:
         m, n = len(self.expected_tools), len(self.tools_called)
         dp = [[0.0] * (n + 1) for _ in range(m + 1)]
         for i in range(1, m + 1):

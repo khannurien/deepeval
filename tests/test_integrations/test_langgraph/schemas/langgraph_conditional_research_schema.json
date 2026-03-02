@@ -1,0 +1,1121 @@
+{
+  "uuid": "7f0c1f9d-fab2-457f-98cc-bab784bced81",
+  "baseSpans": [
+    {
+      "uuid": "019bfb48-88f9-7253-81c3-511e5ebf6772",
+      "name": "LangGraph",
+      "status": "SUCCESS",
+      "type": "base",
+      "startTime": "2026-01-26T17:09:53.529Z",
+      "endTime": "2026-01-26T17:09:57.803Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Quantum computing achieves new milestone in error correction.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "research_topic",
+            "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+            "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "status": "success"
+          },
+          {
+            "content": "- Quantum computing uses quantum bits (qubits) that exploit superposition and entanglement to perform computations not feasible for classical computers.  \n- Recent milestone: advances in quantum error correction have been achieved, improving the stability and reliability of quantum processors.  \n- Ongoing challenges include qubit scalability, error rates, and developing practical algorithms and architectures for useful, large-scale quantum computation.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 80,
+                "prompt_tokens": 259,
+                "total_tokens": 339,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO3JCXZpNqWrf8KidgcXWmqFa1f",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-916f-7d13-9cd8-34a53c398018-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 259,
+              "output_tokens": 80,
+              "total_tokens": 339,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "intent": "research"
+      }
+    },
+    {
+      "uuid": "019bfb48-916f-7d13-9cd8-3497eabdfd28",
+      "name": "research",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-88f9-7253-81c3-511e5ebf6772",
+      "startTime": "2026-01-26T17:09:55.695Z",
+      "endTime": "2026-01-26T17:09:57.803Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Quantum computing achieves new milestone in error correction.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "research_topic",
+            "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+            "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "status": "success"
+          }
+        ],
+        "intent": "research"
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "- Quantum computing uses quantum bits (qubits) that exploit superposition and entanglement to perform computations not feasible for classical computers.  \n- Recent milestone: advances in quantum error correction have been achieved, improving the stability and reliability of quantum processors.  \n- Ongoing challenges include qubit scalability, error rates, and developing practical algorithms and architectures for useful, large-scale quantum computation.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 80,
+                "prompt_tokens": 259,
+                "total_tokens": 339,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO3JCXZpNqWrf8KidgcXWmqFa1f",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-916f-7d13-9cd8-34a53c398018-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 259,
+              "output_tokens": 80,
+              "total_tokens": 339,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019bfb48-99ab-7683-9255-63cc921a3743",
+      "name": "should_continue",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-916f-7d13-9cd8-3497eabdfd28",
+      "startTime": "2026-01-26T17:09:57.803Z",
+      "endTime": "2026-01-26T17:09:57.803Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Quantum computing achieves new milestone in error correction.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "research_topic",
+            "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+            "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "status": "success"
+          },
+          {
+            "content": "- Quantum computing uses quantum bits (qubits) that exploit superposition and entanglement to perform computations not feasible for classical computers.  \n- Recent milestone: advances in quantum error correction have been achieved, improving the stability and reliability of quantum processors.  \n- Ongoing challenges include qubit scalability, error rates, and developing practical algorithms and architectures for useful, large-scale quantum computation.",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 80,
+                "prompt_tokens": 259,
+                "total_tokens": 339,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO3JCXZpNqWrf8KidgcXWmqFa1f",
+              "service_tier": "default",
+              "finish_reason": "stop",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-916f-7d13-9cd8-34a53c398018-0",
+            "tool_calls": [],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 259,
+              "output_tokens": 80,
+              "total_tokens": 339,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "intent": "research"
+      },
+      "output": "__end__"
+    },
+    {
+      "uuid": "019bfb48-916c-7f42-a3c1-81fc0b001187",
+      "name": "tools",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-88f9-7253-81c3-511e5ebf6772",
+      "startTime": "2026-01-26T17:09:55.692Z",
+      "endTime": "2026-01-26T17:09:55.694Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "intent": "research"
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Quantum computing achieves new milestone in error correction.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "research_topic",
+            "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+            "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "status": "success"
+          }
+        ]
+      },
+      "toolsCalled": [
+        {
+          "name": "research_topic",
+          "output": {
+            "content": "Quantum computing achieves new milestone in error correction.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "research_topic",
+            "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+            "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "status": "success"
+          },
+          "inputParameters": {
+            "topic": "quantum computing"
+          }
+        }
+      ]
+    },
+    {
+      "uuid": "019bfb48-916e-7a73-b1a8-0db8210f503a",
+      "name": "route_after_tools",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-916c-7f42-a3c1-81fc0b001187",
+      "startTime": "2026-01-26T17:09:55.694Z",
+      "endTime": "2026-01-26T17:09:55.694Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          },
+          {
+            "content": "Quantum computing achieves new milestone in error correction.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "research_topic",
+            "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+            "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "status": "success"
+          }
+        ],
+        "intent": "research"
+      },
+      "output": "research"
+    },
+    {
+      "uuid": "019bfb48-88fa-70f1-ba73-43885b4c721b",
+      "name": "research",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-88f9-7253-81c3-511e5ebf6772",
+      "startTime": "2026-01-26T17:09:53.530Z",
+      "endTime": "2026-01-26T17:09:55.692Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          }
+        ],
+        "intent": "research"
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "019bfb48-916b-7163-8fe7-0c9d52dae46c",
+      "name": "should_continue",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-88fa-70f1-ba73-43885b4c721b",
+      "startTime": "2026-01-26T17:09:55.691Z",
+      "endTime": "2026-01-26T17:09:55.692Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {
+              "refusal": null
+            },
+            "response_metadata": {
+              "token_usage": {
+                "completion_tokens": 26,
+                "prompt_tokens": 219,
+                "total_tokens": 245,
+                "completion_tokens_details": {
+                  "accepted_prediction_tokens": 0,
+                  "audio_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "prompt_tokens_details": {
+                  "audio_tokens": 0,
+                  "cached_tokens": 0
+                }
+              },
+              "model_provider": "openai",
+              "model_name": "gpt-5-mini-2025-08-07",
+              "system_fingerprint": null,
+              "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+              "service_tier": "default",
+              "finish_reason": "tool_calls",
+              "logprobs": null
+            },
+            "type": "ai",
+            "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+            "tool_calls": [
+              {
+                "name": "research_topic",
+                "args": {
+                  "topic": "quantum computing"
+                },
+                "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": {
+              "input_tokens": 219,
+              "output_tokens": 26,
+              "total_tokens": 245,
+              "input_token_details": {
+                "audio": 0,
+                "cache_read": 0
+              },
+              "output_token_details": {
+                "audio": 0,
+                "reasoning": 0
+              }
+            }
+          }
+        ],
+        "intent": "research"
+      },
+      "output": "tools"
+    },
+    {
+      "uuid": "019bfb48-88fa-70f1-ba73-4368867c6376",
+      "name": "classifier",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-88f9-7253-81c3-511e5ebf6772",
+      "startTime": "2026-01-26T17:09:53.530Z",
+      "endTime": "2026-01-26T17:09:53.530Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          }
+        ]
+      },
+      "output": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          }
+        ],
+        "intent": "research"
+      }
+    },
+    {
+      "uuid": "019bfb48-88fa-70f1-ba73-437794790d06",
+      "name": "route_by_intent",
+      "status": "SUCCESS",
+      "type": "base",
+      "parentUuid": "019bfb48-88fa-70f1-ba73-4368867c6376",
+      "startTime": "2026-01-26T17:09:53.530Z",
+      "endTime": "2026-01-26T17:09:53.530Z",
+      "input": {
+        "messages": [
+          {
+            "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+          }
+        ],
+        "intent": "research"
+      },
+      "output": "research"
+    }
+  ],
+  "agentSpans": [],
+  "llmSpans": [
+    {
+      "uuid": "019bfb48-916f-7d13-9cd8-34a53c398018",
+      "name": "ChatOpenAI",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "019bfb48-916f-7d13-9cd8-3497eabdfd28",
+      "startTime": "2026-01-26T17:09:55.695Z",
+      "endTime": "2026-01-26T17:09:57.803Z",
+      "input": [
+        {
+          "role": "human",
+          "content": "You are a research assistant. Use the research_topic tool to find information."
+        },
+        {
+          "role": "human",
+          "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop."
+        },
+        {
+          "role": "ai",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Quantum computing achieves new milestone in error correction."
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'research_topic', 'description': 'Research a topic and return findings.', 'parameters': {'properties': {'topic': {'type': 'string'}}, 'required': ['topic'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'summarize_text', 'description': 'Summarize the given text.', 'parameters': {'properties': {'text': {'type': 'string'}}, 'required': ['text'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'fact_check', 'description': 'Fact check a claim.', 'parameters': {'properties': {'claim': {'type': 'string'}}, 'required': ['claim'], 'type': 'object'}}}"
+        }
+      ],
+      "output": {
+        "role": "AI",
+        "content": "- Quantum computing uses quantum bits (qubits) that exploit superposition and entanglement to perform computations not feasible for classical computers.  \n- Recent milestone: advances in quantum error correction have been achieved, improving the stability and reliability of quantum processors.  \n- Ongoing challenges include qubit scalability, error rates, and developing practical algorithms and architectures for useful, large-scale quantum computation.",
+        "tool_calls": []
+      },
+      "model": "gpt-5-mini-2025-08-07",
+      "inputTokenCount": 259.0,
+      "outputTokenCount": 80.0
+    },
+    {
+      "uuid": "019bfb48-88fb-77b0-bbb1-82c1826c17d8",
+      "name": "ChatOpenAI",
+      "status": "SUCCESS",
+      "type": "llm",
+      "parentUuid": "019bfb48-88fa-70f1-ba73-43885b4c721b",
+      "startTime": "2026-01-26T17:09:53.531Z",
+      "endTime": "2026-01-26T17:09:55.691Z",
+      "input": [
+        {
+          "role": "human",
+          "content": "You are a research assistant. Use the research_topic tool to find information."
+        },
+        {
+          "role": "human",
+          "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop."
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'research_topic', 'description': 'Research a topic and return findings.', 'parameters': {'properties': {'topic': {'type': 'string'}}, 'required': ['topic'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'summarize_text', 'description': 'Summarize the given text.', 'parameters': {'properties': {'text': {'type': 'string'}}, 'required': ['text'], 'type': 'object'}}}"
+        },
+        {
+          "role": "Tool Input",
+          "content": "{'type': 'function', 'function': {'name': 'fact_check', 'description': 'Fact check a claim.', 'parameters': {'properties': {'claim': {'type': 'string'}}, 'required': ['claim'], 'type': 'object'}}}"
+        }
+      ],
+      "output": {
+        "role": "AI",
+        "content": "",
+        "tool_calls": [
+          {
+            "name": "research_topic",
+            "args": {
+              "topic": "quantum computing"
+            },
+            "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ"
+          }
+        ]
+      },
+      "model": "gpt-5-mini-2025-08-07",
+      "inputTokenCount": 219.0,
+      "outputTokenCount": 26.0
+    }
+  ],
+  "retrieverSpans": [],
+  "toolSpans": [
+    {
+      "uuid": "019bfb48-916d-7da1-9348-57473f763021",
+      "name": "research_topic",
+      "status": "SUCCESS",
+      "type": "tool",
+      "parentUuid": "019bfb48-916c-7f42-a3c1-81fc0b001187",
+      "startTime": "2026-01-26T17:09:55.693Z",
+      "endTime": "2026-01-26T17:09:55.694Z",
+      "input": {
+        "topic": "quantum computing"
+      },
+      "output": {
+        "content": "Quantum computing achieves new milestone in error correction.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "research_topic",
+        "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+        "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+        "status": "success"
+      }
+    }
+  ],
+  "startTime": "2026-01-26T17:09:53.529Z",
+  "endTime": "2026-01-26T17:09:57.803Z",
+  "name": "langgraph-conditional-research",
+  "metadata": {
+    "test_type": "conditional_research"
+  },
+  "tags": [
+    "langgraph",
+    "conditional",
+    "research"
+  ],
+  "environment": "development",
+  "input": {
+    "messages": [
+      {
+        "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+      }
+    ]
+  },
+  "output": {
+    "messages": [
+      {
+        "content": "Use the research tool exactly once to research: quantum computing. Do not ask clarification questions. After the tool returns, respond with a short 3-bullet summary and stop.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "id": "285ce74f-dc7b-4584-a625-3e09f249cb36"
+      },
+      {
+        "content": "",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 26,
+            "prompt_tokens": 219,
+            "total_tokens": 245,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2KO2x3tFCu2TMfyRivlz0LtCnrrF",
+          "service_tier": "default",
+          "finish_reason": "tool_calls",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019bfb48-88fb-77b0-bbb1-82c1826c17d8-0",
+        "tool_calls": [
+          {
+            "name": "research_topic",
+            "args": {
+              "topic": "quantum computing"
+            },
+            "id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+            "type": "tool_call"
+          }
+        ],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 219,
+          "output_tokens": 26,
+          "total_tokens": 245,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      },
+      {
+        "content": "Quantum computing achieves new milestone in error correction.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "research_topic",
+        "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+        "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+        "status": "success"
+      },
+      {
+        "content": "- Quantum computing uses quantum bits (qubits) that exploit superposition and entanglement to perform computations not feasible for classical computers.  \n- Recent milestone: advances in quantum error correction have been achieved, improving the stability and reliability of quantum processors.  \n- Ongoing challenges include qubit scalability, error rates, and developing practical algorithms and architectures for useful, large-scale quantum computation.",
+        "additional_kwargs": {
+          "refusal": null
+        },
+        "response_metadata": {
+          "token_usage": {
+            "completion_tokens": 80,
+            "prompt_tokens": 259,
+            "total_tokens": 339,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": 0,
+              "audio_tokens": 0,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": 0
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0
+            }
+          },
+          "model_provider": "openai",
+          "model_name": "gpt-5-mini-2025-08-07",
+          "system_fingerprint": null,
+          "id": "chatcmpl-D2KO3JCXZpNqWrf8KidgcXWmqFa1f",
+          "service_tier": "default",
+          "finish_reason": "stop",
+          "logprobs": null
+        },
+        "type": "ai",
+        "id": "lc_run--019bfb48-916f-7d13-9cd8-34a53c398018-0",
+        "tool_calls": [],
+        "invalid_tool_calls": [],
+        "usage_metadata": {
+          "input_tokens": 259,
+          "output_tokens": 80,
+          "total_tokens": 339,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      }
+    ],
+    "intent": "research"
+  },
+  "status": "SUCCESS",
+  "toolsCalled": [
+    {
+      "name": "research_topic",
+      "output": {
+        "content": "Quantum computing achieves new milestone in error correction.",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "tool",
+        "name": "research_topic",
+        "id": "e6272495-b7a5-4672-b538-02bb7f9c48c8",
+        "tool_call_id": "call_in7ZzNigQ6Uu2QWj1bsWBdwZ",
+        "status": "success"
+      },
+      "inputParameters": {
+        "topic": "quantum computing"
+      }
+    }
+  ]
+}

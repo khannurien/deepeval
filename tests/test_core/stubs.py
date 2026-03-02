@@ -1,13 +1,15 @@
 import io
 import time
 import asyncio
+from contextlib import contextmanager
+from unittest.mock import MagicMock
 from types import SimpleNamespace
 from typing import Callable, List, Optional, Protocol, runtime_checkable
 
 from deepeval.constants import ProviderSlug as PS
 from deepeval.metrics import BaseMetric, TaskCompletionMetric
 from deepeval.models.retry_policy import create_retry_decorator
-from deepeval.optimization.types import ModuleId
+from deepeval.optimizer.types import ModuleId
 from deepeval.prompt.prompt import Prompt
 from deepeval.tracing.types import TraceSpanStatus
 
@@ -81,7 +83,8 @@ class StubPrompt:
 
 
 class DummyModel:
-    pass
+    def get_model_name(self):
+        return "dummy"
 
 
 class AlwaysJsonModel:
@@ -155,8 +158,55 @@ class _RecordingClient:
     retry options to SDK constructors without making network calls.
     """
 
-    def __init__(self, **kwargs):
-        self.kwargs = dict(kwargs)
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+
+def make_fake_ollama_module(client_cls=_RecordingClient):
+    """
+    Return a fake 'ollama' module with Client / AsyncClient mocks that:
+
+    - Are MagicMocks, so tests can use assert_called_once, call_args, etc.
+    - Construct instances of `client_cls` when called, via side_effect.
+    """
+    client_mock = MagicMock()
+    async_client_mock = MagicMock()
+
+    client_mock.side_effect = client_cls
+    async_client_mock.side_effect = client_cls
+
+    return SimpleNamespace(
+        Client=client_mock,
+        AsyncClient=async_client_mock,
+    )
+
+
+def _make_fake_genai_module():
+    """
+    Return a fake 'google.genai' module where require_dependency directly returns an instance of _RecordingClient.
+    """
+    # Define the mock types
+    fake_types = SimpleNamespace(
+        SafetySetting=MagicMock(),
+        HarmCategory=SimpleNamespace(
+            HARM_CATEGORY_DANGEROUS_CONTENT="dangerous",
+            HARM_CATEGORY_HARASSMENT="harassment",
+            HARM_CATEGORY_HATE_SPEECH="hate_speech",
+            HARM_CATEGORY_SEXUALLY_EXPLICIT="sexually_explicit",
+        ),
+        HarmBlockThreshold=SimpleNamespace(
+            BLOCK_NONE="block_none",
+            BLOCK_ONLY_HIGH="block_only_high",  # Ensure this is included
+        ),
+    )
+
+    # Return the fake genai module with the actual instances
+    return SimpleNamespace(
+        Client=_RecordingClient,
+        AsyncClient=_RecordingClient,
+        types=fake_types,
+    )
 
 
 ###########
@@ -341,6 +391,53 @@ class _FakeTrace:
         self.uuid = "trace-uuid"
 
 
+######################
+# Progress Indicator #
+######################
+
+
+class DummyProgress:
+    """
+    Tiny stub for rich.progress.Progress used to test _on_status.
+    Records update / advance calls.
+    """
+
+    def __init__(self, tasks=None):
+        self.records = []
+        self.tasks = list(tasks) if tasks is not None else []
+
+    def update(self, task_id, **kwargs):
+        self.records.append(("update", task_id, kwargs))
+
+    def advance(self, task_id, amount):
+        self.records.append(("advance", task_id, {"amount": amount}))
+
+    def remove_task(self, task_id):
+        # rich removes the task from its task list and so shall we
+        self.records.append(("remove_task", task_id, {}))
+        self.tasks = [
+            t for t in self.tasks if getattr(t, "id", None) != task_id
+        ]
+
+
+###############
+# Synthesizer #
+###############
+
+
+class DummyEvolutionConfig:
+    num_evolutions = 0
+    evolutions = {}
+
+
+@contextmanager
+def stub_synthesizer_progress_context(**kwargs):
+    # behave like synthesizer_progress_context: yield (progress, pbar_id)
+    progress = kwargs.get("progress") or DummyProgress()
+    pbar_id = kwargs.get("pbar_id")
+    yield (progress, pbar_id)
+
+
 ################
 # Optimization #
 ################
@@ -348,7 +445,7 @@ class _FakeTrace:
 
 class _DummyRewriter:
     """
-    Minimal object satisfying the PromptRewriterProtocol at runtime.
+    Minimal object satisfying the Rewriter at runtime.
     Used to verify set_rewriter/get_rewriter wiring.
     """
 
@@ -515,28 +612,12 @@ class AsyncDummyRunner:
         }
 
 
-class DummyProgress:
-    """
-    Tiny stub for rich.progress.Progress used to test _on_status.
-    Records update / advance calls.
-    """
-
-    def __init__(self):
-        self.records = []
-
-    def update(self, task_id, **kwargs):
-        self.records.append(("update", task_id, kwargs))
-
-    def advance(self, task_id, amount):
-        self.records.append(("advance", task_id, {"amount": amount}))
-
-
 class StubScoringAdapter:
     """
     Minimal scoring adapter stub for exercising GEPARunner and other
     single-module optimization runners.
 
-    - score_on_pareto / minibatch_score:
+    - score_pareto / score_minibatch:
         returns higher scores for prompts whose text contains "CHILD"
         so that "improved" children can be accepted.
     """
@@ -552,26 +633,28 @@ class StubScoringAdapter:
     def _get_prompt_text(self, prompt_configuration):
         if not getattr(prompt_configuration, "prompts", None):
             return ""
-        # For GEPA/MIPRO we expect a single module id in `prompts`.
+        # For GEPA/MIPROV2 we expect a single module id in `prompts`.
         prompt = next(iter(prompt_configuration.prompts.values()))
         return (prompt.text_template or "").strip()
 
-    def score_on_pareto(self, prompt_configuration, d_pareto):
+    def score_pareto(self, prompt_configuration, d_pareto):
         self.pareto_calls.append((prompt_configuration, list(d_pareto)))
         txt = self._get_prompt_text(prompt_configuration)
         return [1.0] if "CHILD" in txt else [0.5]
 
-    async def a_score_on_pareto(self, prompt_configuration, d_pareto):
+    async def a_score_pareto(self, prompt_configuration, d_pareto):
         self.a_pareto_calls.append((prompt_configuration, list(d_pareto)))
-        return self.score_on_pareto(prompt_configuration, d_pareto)
+        return self.score_pareto(prompt_configuration, d_pareto)
 
-    def minibatch_feedback(self, prompt_configuration, module_id, minibatch):
+    def get_minibatch_feedback(
+        self, prompt_configuration, module_id, minibatch
+    ):
         self.feedback_calls.append(
             (prompt_configuration, module_id, list(minibatch))
         )
         return "feedback"
 
-    async def a_minibatch_feedback(
+    async def a_get_minibatch_feedback(
         self, prompt_configuration, module_id, minibatch
     ):
         self.a_feedback_calls.append(
@@ -579,14 +662,14 @@ class StubScoringAdapter:
         )
         return "feedback"
 
-    def minibatch_score(self, prompt_configuration, minibatch):
+    def score_minibatch(self, prompt_configuration, minibatch):
         self.score_calls.append((prompt_configuration, list(minibatch)))
         txt = self._get_prompt_text(prompt_configuration)
         return 1.0 if "CHILD" in txt else 0.5
 
-    async def a_minibatch_score(self, prompt_configuration, minibatch):
+    async def a_score_minibatch(self, prompt_configuration, minibatch):
         self.a_score_calls.append((prompt_configuration, list(minibatch)))
-        return self.minibatch_score(prompt_configuration, minibatch)
+        return self.score_minibatch(prompt_configuration, minibatch)
 
 
 ##################

@@ -21,7 +21,7 @@ from deepeval.test_run.api import (
 )
 from deepeval.tracing.utils import make_json_serializable
 from deepeval.tracing.api import SpanApiType, span_api_type_literals
-from deepeval.test_case import LLMTestCase, ConversationalTestCase, MLLMTestCase
+from deepeval.test_case import LLMTestCase, ConversationalTestCase
 from deepeval.utils import (
     delete_file_if_exists,
     get_is_running_deepeval,
@@ -98,6 +98,7 @@ class TraceMetricScores(BaseModel):
 
 class PromptData(BaseModel):
     alias: Optional[str] = None
+    hash: Optional[str] = None
     version: Optional[str] = None
     text_template: Optional[str] = None
     messages_template: Optional[List[PromptMessage]] = None
@@ -182,7 +183,7 @@ class TestRun(BaseModel):
 
     def set_dataset_properties(
         self,
-        test_case: Union[LLMTestCase, ConversationalTestCase, MLLMTestCase],
+        test_case: Union[LLMTestCase, ConversationalTestCase],
     ):
         if self.dataset_alias is None:
             self.dataset_alias = test_case._dataset_alias
@@ -538,7 +539,7 @@ class TestRunManager:
     def update_test_run(
         self,
         api_test_case: Union[LLMApiTestCase, ConversationalApiTestCase],
-        test_case: Union[LLMTestCase, ConversationalTestCase, MLLMTestCase],
+        test_case: Union[LLMTestCase, ConversationalTestCase],
     ):
         if (
             api_test_case.metrics_data is not None
@@ -1028,8 +1029,13 @@ class TestRunManager:
                 LATEST_TEST_RUN_FILE_PATH,
                 save_under_key=LATEST_TEST_RUN_DATA_KEY,
             )
+            token_cost = (
+                f"{test_run.evaluation_cost} USD"
+                if test_run.evaluation_cost
+                else "None"
+            )
             console.print(
-                f"\n\n[rgb(5,245,141)]✓[/rgb(5,245,141)] Evaluation completed 🎉! (time taken: {round(runDuration, 2)}s | token cost: {test_run.evaluation_cost} USD)\n"
+                f"\n\n[rgb(5,245,141)]✓[/rgb(5,245,141)] Evaluation completed 🎉! (time taken: {round(runDuration, 2)}s | token cost: {token_cost})\n"
                 f"» Test Results ({test_run.test_passed + test_run.test_failed} total tests):\n",
                 f"  » Pass Rate: {round((test_run.test_passed / (test_run.test_passed + test_run.test_failed)) * 100, 2)}% | Passed: [bold green]{test_run.test_passed}[/bold green] | Failed: [bold red]{test_run.test_failed}[/bold red]\n\n",
                 "=" * 80,
@@ -1107,8 +1113,8 @@ class TestRunManager:
                 lines.append("")
                 lines.extend(settings_lines)
             title = f"{format_string(prompt.alias)}"
-            if prompt.version:
-                title += f" (v{prompt.version})"
+            if prompt.hash:
+                title += f" ({prompt.hash})"
             body = "\n".join(lines)
             panel = Panel(
                 body,

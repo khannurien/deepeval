@@ -3,6 +3,7 @@ import types
 import pytest
 from pydantic import SecretStr
 
+from deepeval.errors import DeepEvalError
 from deepeval.models.llms.litellm_model import LiteLLMModel  # noqa: E402
 
 ############################################################################
@@ -46,15 +47,15 @@ def test_litellm_explicit_overrides_settings_and_env(monkeypatch, settings):
     model = LiteLLMModel(
         model="ctor-model",
         api_key="ctor-api-key",
-        api_base="http://ctor-base",
+        base_url="http://ctor-base",
     )
 
     # Model name and connection parameters should come from ctor arguments
-    assert model.model_name == "ctor-model"
+    assert model.name == "ctor-model"
     assert isinstance(model.api_key, SecretStr)
     assert model.api_key.get_secret_value() == "ctor-api-key"
-    assert model.api_base is not None
-    assert model.api_base.rstrip("/") == "http://ctor-base"
+    assert model.base_url is not None
+    assert model.base_url.rstrip("/") == "http://ctor-base"
 
 
 def test_litellm_defaults_model_api_key_and_base_from_settings(settings):
@@ -62,7 +63,7 @@ def test_litellm_defaults_model_api_key_and_base_from_settings(settings):
     When no ctor `model`, `api_key`, or `api_base` are provided, LiteLLMModel
     should resolve all three from the Pydantic Settings object:
 
-      - model_name from Settings.LITELLM_MODEL_NAME
+      - model from Settings.LITELLM_MODEL_NAME
       - api_key    from Settings.LITELLM_API_KEY
       - api_base   from Settings.LITELLM_API_BASE
     """
@@ -76,21 +77,42 @@ def test_litellm_defaults_model_api_key_and_base_from_settings(settings):
     # No ctor overrides: values must be resolved from Settings
     model = LiteLLMModel()
 
-    assert model.model_name == "settings-model"
+    assert model.name == "settings-model"
     assert isinstance(model.api_key, SecretStr)
     assert model.api_key.get_secret_value() == "settings-api-key"
-    assert model.api_base is not None
-    assert model.api_base.rstrip("/") == "http://settings-base"
+    assert model.base_url is not None
+    assert model.base_url.rstrip("/") == "http://settings-base"
 
 
 def test_litellm_raises_when_model_missing(settings):
     """
     If neither ctor `model` nor Settings.LITELLM_MODEL_NAME is set,
-    LiteLLMModel should raise a ValueError.
+    LiteLLMModel should raise a DeepEvalError.
     """
     # Clear any model name in Settings
     with settings.edit(persist=False):
         settings.LITELLM_MODEL_NAME = None
 
-    with pytest.raises(ValueError):
+    with pytest.raises(DeepEvalError):
         LiteLLMModel()
+
+
+########################################################
+# Test legacy keyword backwards compatability behavior #
+########################################################
+
+
+def test_litellm_model_accepts_legacy_api_base_keyword_and_maps_to_base_url(
+    settings,
+):
+    with settings.edit(persist=False):
+        settings.LITELLM_MODEL_NAME = "settings-model"
+        settings.LITELLM_API_KEY = "settings-api-key"
+
+    model = LiteLLMModel(base_url="http://ctor-base")
+
+    # legacy keyword mapped to canonical parameter
+    assert model.base_url == "http://ctor-base"
+
+    # legacy key should not be forwarded to the client kwargs
+    assert "api_base" not in model.kwargs

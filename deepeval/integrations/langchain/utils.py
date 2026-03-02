@@ -1,5 +1,77 @@
-from typing import Any, List, Dict, Optional
+import uuid
+from typing import Any, List, Dict, Optional, Union, Literal, Callable
+from time import perf_counter
 from langchain_core.outputs import ChatGeneration
+from rich.progress import Progress
+
+from deepeval.metrics import BaseMetric
+from deepeval.tracing.context import current_span_context, current_trace_context
+from deepeval.tracing.tracing import trace_manager
+from deepeval.tracing.types import (
+    AgentSpan,
+    BaseSpan,
+    LlmSpan,
+    RetrieverSpan,
+    SpanType,
+    ToolSpan,
+    TraceSpanStatus,
+)
+
+
+def convert_chat_messages_to_input(
+    messages: list[list[Any]], **kwargs
+) -> List[Dict[str, str]]:
+    """
+    Convert LangChain chat messages to our internal format.
+
+    Args:
+        messages: list[list[BaseMessage]] - outer list is batches, inner is messages.
+        **kwargs: May contain invocation_params with tools definitions.
+
+    Returns:
+        List of dicts with 'role' and 'content' keys, matching the schema used
+        by parse_prompts_to_messages for consistency.
+    """
+    # Valid roles matching parse_prompts_to_messages
+    ROLE_MAPPING = {
+        "human": "human",
+        "user": "human",
+        "ai": "ai",
+        "assistant": "ai",
+        "system": "system",
+        "tool": "tool",
+        "function": "function",
+    }
+
+    result: List[Dict[str, str]] = []
+    for batch in messages:
+        for msg in batch:
+            # BaseMessage has .type (role) and .content
+            raw_role = getattr(msg, "type", "unknown")
+            content = getattr(msg, "content", "")
+
+            # Normalize role using same conventions as prompt parsing
+            role = ROLE_MAPPING.get(raw_role.lower(), raw_role)
+
+            # Convert content to string (handles empty content, lists, etc.)
+            if isinstance(content, list):
+                # Some messages have content as a list of content blocks
+                content_str = " ".join(
+                    str(c.get("text", c) if isinstance(c, dict) else c)
+                    for c in content
+                )
+            else:
+                content_str = str(content) if content else ""
+
+            result.append({"role": role, "content": content_str})
+
+    # Append tool definitions if present which matches parse_prompts_to_messages behavior
+    tools = kwargs.get("invocation_params", {}).get("tools", None)
+    if tools and isinstance(tools, list):
+        for tool in tools:
+            result.append({"role": "Tool Input", "content": str(tool)})
+
+    return result
 
 
 def parse_prompts_to_messages(
@@ -112,27 +184,6 @@ def safe_extract_model_name(
     return None
 
 
-from typing import Any, List, Dict, Optional, Union, Literal, Callable
-from langchain_core.outputs import ChatGeneration
-from time import perf_counter
-import uuid
-from rich.progress import Progress
-from deepeval.tracing.tracing import Observer
-
-from deepeval.metrics import BaseMetric
-from deepeval.tracing.context import current_span_context, current_trace_context
-from deepeval.tracing.tracing import trace_manager
-from deepeval.tracing.types import (
-    AgentSpan,
-    BaseSpan,
-    LlmSpan,
-    RetrieverSpan,
-    SpanType,
-    ToolSpan,
-    TraceSpanStatus,
-)
-
-
 def enter_current_context(
     span_type: Optional[
         Union[Literal["agent", "llm", "retriever", "tool"], str]
@@ -145,6 +196,7 @@ def enter_current_context(
     progress: Optional[Progress] = None,
     pbar_callback_id: Optional[int] = None,
     uuid_str: Optional[str] = None,
+    fallback_trace_uuid: Optional[str] = None,
 ) -> BaseSpan:
     start_time = perf_counter()
     observe_kwargs = observe_kwargs or {}
@@ -159,12 +211,27 @@ def enter_current_context(
     parent_uuid: Optional[str] = None
 
     if parent_span:
-        parent_uuid = parent_span.uuid
-        trace_uuid = parent_span.trace_uuid
-    else:
+        # Validate that the parent span's trace is still active
+        if parent_span.trace_uuid in trace_manager.active_traces:
+            parent_uuid = parent_span.uuid
+            trace_uuid = parent_span.trace_uuid
+        else:
+            # Parent span references a dead trace - treat as if no parent
+            parent_span = None
+
+    if not parent_span:
         current_trace = current_trace_context.get()
-        if current_trace:
+        # IMPORTANT: Verify trace is still active, not just in context
+        # (a previous failed async operation might leave a dead trace in context)
+        if current_trace and current_trace.uuid in trace_manager.active_traces:
             trace_uuid = current_trace.uuid
+        elif (
+            fallback_trace_uuid
+            and fallback_trace_uuid in trace_manager.active_traces
+        ):
+            # In async contexts, ContextVar may not propagate. Use the fallback trace_uuid
+            # provided by the CallbackHandler to avoid creating duplicate traces.
+            trace_uuid = fallback_trace_uuid
         else:
             trace = trace_manager.start_new_trace(
                 metric_collection=metric_collection
@@ -223,8 +290,8 @@ def enter_current_context(
 
     if (
         parent_span
-        and getattr(parent_span, "progress", None) is not None
-        and getattr(parent_span, "pbar_callback_id", None) is not None
+        and parent_span.progress is not None
+        and parent_span.pbar_callback_id is not None
     ):
         progress = parent_span.progress
         pbar_callback_id = parent_span.pbar_callback_id
@@ -258,11 +325,13 @@ def exit_current_context(
 
     current_span = current_span_context.get()
 
+    # In async contexts (LangChain/LangGraph), context variables don't propagate
+    # reliably across task boundaries. Fall back to direct span lookup.
     if not current_span or current_span.uuid != uuid_str:
-        print(
-            f"Error: Current span in context does not match the span being exited. Expected UUID: {uuid_str}, Got: {current_span.uuid if current_span else 'None'}"
-        )
-        return
+        current_span = trace_manager.get_span_by_uuid(uuid_str)
+        if not current_span:
+            # Span already removed or never existed
+            return
 
     current_span.end_time = end_time
     if exc_type is not None:
@@ -295,7 +364,12 @@ def exit_current_context(
         else:
             current_span_context.set(None)
     else:
+        # Try context first, then fall back to direct trace lookup for async contexts
         current_trace = current_trace_context.get()
+        if not current_trace and current_span.trace_uuid:
+            current_trace = trace_manager.get_trace_by_uuid(
+                current_span.trace_uuid
+            )
         if current_span.status == TraceSpanStatus.ERRORED and current_trace:
             current_trace.status = TraceSpanStatus.ERRORED
         if current_trace and current_trace.uuid == current_span.trace_uuid:

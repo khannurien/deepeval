@@ -25,7 +25,7 @@ from deepeval.metrics.utils import (
 from deepeval.progress_context import synthesizer_progress_context
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.dataset.golden import Golden, ConversationalGolden
-from deepeval.synthesizer.types import *
+from deepeval.synthesizer.types import Evolution, PromptEvolution
 from deepeval.synthesizer.templates import (
     EvolutionTemplate,
     SynthesizerTemplate,
@@ -246,7 +246,7 @@ class Synthesizer:
                 )
                 if self.cost_tracking and self.using_native_model:
                     print(f"💰 API cost: {self.synthesis_cost:.6f}")
-                if _send_data == True:
+                if _send_data:
                     pass
                 remove_pbars(
                     progress,
@@ -546,7 +546,7 @@ class Synthesizer:
                 # Remove pbar if not from docs
                 remove_pbars(progress, [pbar_id]) if _progress is None else None
 
-        if _send_data == True:
+        if _send_data:
             pass
         if _reset_cost and self.cost_tracking and self.using_native_model:
             print(f"💰 API cost: {self.synthesis_cost:.6f}")
@@ -567,7 +567,8 @@ class Synthesizer:
         if _reset_cost:
             self.synthetic_goldens = []
             self.synthesis_cost = 0 if self.using_native_model else None
-        semaphore = asyncio.Semaphore(self.max_concurrent)
+        context_semaphore = asyncio.Semaphore(self.max_concurrent)
+        worker_semaphore = asyncio.Semaphore(self.max_concurrent)
         goldens: List[Golden] = []
 
         with synthesizer_progress_context(
@@ -586,9 +587,9 @@ class Synthesizer:
         ):
             tasks = [
                 self.task_wrapper(
-                    semaphore,
+                    context_semaphore,
                     self._a_generate_from_context,
-                    semaphore=semaphore,
+                    semaphore=worker_semaphore,
                     context=context,
                     goldens=goldens,
                     include_expected_output=include_expected_output,
@@ -789,7 +790,7 @@ class Synthesizer:
                 prompt = SynthesizerTemplate.generate_text2sql_expected_output(
                     input=data.input, context="\n".join(context)
                 )
-                expected_output: SQLData = self._generate_schema(
+                expected_output: SQLData = await self._a_generate_schema(
                     prompt, SQLData, self.model
                 )
 
@@ -797,7 +798,9 @@ class Synthesizer:
             golden = Golden(
                 input=data.input,
                 context=context,
-                expected_output=expected_output.sql,
+                expected_output=(
+                    expected_output.sql if expected_output is not None else None
+                ),
             )
             goldens.append(golden)
 
@@ -952,20 +955,20 @@ class Synthesizer:
                         progress=progress,
                         pbar_evolve_input_id=pbar_evolve_input_id,
                     )
-                    evolved_prompts.append(evolved_prompt)
+                    evolved_prompts.append((evolved_prompt, evolutions_used))
                     update_pbar(progress, pbar_id)
 
                 # Synthesize Goldens
-                for evolved_prompt in evolved_prompts:
+                for evolved_prompt, evolutions in evolved_prompts:
                     golden = Golden(
                         input=evolved_prompt,
-                        additional_metadata={"evolutions": evolutions_used},
+                        additional_metadata={"evolutions": evolutions},
                     )
                     goldens.append(golden)
 
         # Wrap up Synthesis
         self.synthetic_goldens.extend(goldens)
-        if _send_data == True:
+        if _send_data:
             pass
         return goldens
 
@@ -1023,7 +1026,7 @@ class Synthesizer:
                 source_files.append(golden.source_file)
 
             # Extract styles from goldens if not already set
-            if self.set_styling_config == False:
+            if not self.set_styling_config:
                 example_inputs = random.sample(
                     [golden.input for golden in goldens], min(len(goldens), 10)
                 )
@@ -1069,7 +1072,7 @@ class Synthesizer:
             source_files.append(golden.source_file)
 
         # Extract styles from goldens if not already set
-        if self.set_styling_config == False:
+        if not self.set_styling_config:
             example_inputs = random.sample(
                 [golden.input for golden in goldens], min(len(goldens), 10)
             )
@@ -1128,6 +1131,8 @@ class Synthesizer:
         filtered_inputs = []
         for item in inputs:
             input = item.input
+            score = 0.0
+            feedback = ""
             for _ in range(self.filtration_config.max_quality_retries):
                 # Evaluate synthetically generated inputs
                 evaluation_prompt = FilterTemplate.evaluate_synthetic_inputs(
@@ -1171,6 +1176,8 @@ class Synthesizer:
         filtered_inputs = []
         for item in inputs:
             input = item.input
+            score = 0.0
+            feedback = ""
             for _ in range(self.filtration_config.max_quality_retries):
                 # Evaluate synthetically generated inputs
                 evaluation_prompt = FilterTemplate.evaluate_synthetic_inputs(
@@ -1382,53 +1389,99 @@ class Synthesizer:
         # Prepare data for the DataFrame
         data = []
 
-        for golden in self.synthetic_goldens:
-            # Extract basic fields
-            input_text = golden.input
-            expected_output = golden.expected_output
-            context = golden.context
-            actual_output = golden.actual_output
-            retrieval_context = golden.retrieval_context
-            metadata = golden.additional_metadata
-            source_file = golden.source_file
+        if (
+            self.synthetic_goldens is not None
+            and len(self.synthetic_goldens) > 0
+        ):
+            for golden in self.synthetic_goldens:
+                # Extract basic fields
+                input_text = golden.input
+                expected_output = golden.expected_output
+                context = golden.context
+                actual_output = golden.actual_output
+                retrieval_context = golden.retrieval_context
+                metadata = golden.additional_metadata
+                source_file = golden.source_file
 
-            # Calculate num_context and context_length
-            if context is not None:
-                num_context = len(context)
-                context_length = sum(len(c) for c in context)
-            else:
-                num_context = None
-                context_length = None
+                # Calculate num_context and context_length
+                if context is not None:
+                    num_context = len(context)
+                    context_length = sum(len(c) for c in context)
+                else:
+                    num_context = None
+                    context_length = None
 
-            # Handle metadata
-            if metadata is not None:
-                evolutions = metadata.get("evolutions", None)
-                synthetic_input_quality = metadata.get(
-                    "synthetic_input_quality", None
-                )
-                context_quality = metadata.get("context_quality", None)
-            else:
-                evolutions = None
-                synthetic_input_quality = None
-                context_quality = None
+                # Handle metadata
+                if metadata is not None:
+                    evolutions = metadata.get("evolutions", None)
+                    synthetic_input_quality = metadata.get(
+                        "synthetic_input_quality", None
+                    )
+                    context_quality = metadata.get("context_quality", None)
+                else:
+                    evolutions = None
+                    synthetic_input_quality = None
+                    context_quality = None
 
-            # Prepare a row for the DataFrame
-            row = {
-                "input": input_text,
-                "actual_output": actual_output,
-                "expected_output": expected_output,
-                "context": context,
-                "retrieval_context": retrieval_context,
-                "n_chunks_per_context": num_context,
-                "context_length": context_length,
-                "evolutions": evolutions,
-                "context_quality": context_quality,
-                "synthetic_input_quality": synthetic_input_quality,
-                "source_file": source_file,
-            }
+                # Prepare a row for the DataFrame
+                row = {
+                    "input": input_text,
+                    "actual_output": actual_output,
+                    "expected_output": expected_output,
+                    "context": context,
+                    "retrieval_context": retrieval_context,
+                    "n_chunks_per_context": num_context,
+                    "context_length": context_length,
+                    "evolutions": evolutions,
+                    "context_quality": context_quality,
+                    "synthetic_input_quality": synthetic_input_quality,
+                    "source_file": source_file,
+                }
 
-            # Append the row to the data list
-            data.append(row)
+                # Append the row to the data list
+                data.append(row)
+        else:
+            for golden in self.synthetic_conversational_goldens:
+                # Extract basic fields
+                scenario = golden.scenario
+                expected_outcome = golden.expected_outcome
+                context = golden.context
+                metadata = golden.additional_metadata
+
+                # Calculate num_context and context_length
+                if context is not None:
+                    num_context = len(context)
+                    context_length = sum(len(c) for c in context)
+                else:
+                    num_context = None
+                    context_length = None
+
+                # Handle metadata
+                if metadata is not None:
+                    evolutions = metadata.get("evolutions", None)
+                    synthetic_scenario_quality = metadata.get(
+                        "synthetic_scenario_quality", None
+                    )
+                    source_files = metadata.get("source_files", None)
+                else:
+                    evolutions = None
+                    synthetic_scenario_quality = None
+                    source_files = None
+
+                # Prepare a row for the DataFrame
+                row = {
+                    "scenario": scenario,
+                    "expected_outcome": expected_outcome,
+                    "context": context,
+                    "n_chunks_per_context": num_context,
+                    "context_length": context_length,
+                    "evolutions": evolutions,
+                    "synthetic_scenario_quality": synthetic_scenario_quality,
+                    "source_files": source_files,
+                }
+
+                # Append the row to the data list
+                data.append(row)
 
         # Create the pandas DataFrame
         df = pd.DataFrame(data)
@@ -1478,7 +1531,10 @@ class Synthesizer:
                 "parameter."
             )
 
-        if len(self.synthetic_goldens) == 0:
+        if (
+            len(self.synthetic_goldens) == 0
+            and len(self.synthetic_conversational_goldens) == 0
+        ):
             raise ValueError(
                 "No synthetic goldens found. Please generate goldens before saving goldens."
             )
@@ -1493,52 +1549,111 @@ class Synthesizer:
         full_file_path = os.path.join(directory, new_filename)
         if file_type == "json":
             with open(full_file_path, "w", encoding="utf-8") as file:
-                json_data = [
-                    {
-                        "input": golden.input,
-                        "actual_output": golden.actual_output,
-                        "expected_output": golden.expected_output,
-                        "context": golden.context,
-                        "source_file": golden.source_file,
-                    }
-                    for golden in self.synthetic_goldens
-                ]
+                if (
+                    self.synthetic_goldens is not None
+                    and len(self.synthetic_goldens) > 0
+                ):
+                    json_data = [
+                        {
+                            "input": golden.input,
+                            "actual_output": golden.actual_output,
+                            "expected_output": golden.expected_output,
+                            "context": golden.context,
+                            "source_file": golden.source_file,
+                        }
+                        for golden in self.synthetic_goldens
+                    ]
+                else:
+                    json_data = [
+                        {
+                            "scenario": golden.scenario,
+                            "expected_outcome": golden.expected_outcome,
+                            "context": golden.context,
+                            "source_files": golden.additional_metadata.get(
+                                "source_files", None
+                            ),
+                        }
+                        for golden in self.synthetic_conversational_goldens
+                    ]
                 json.dump(json_data, file, indent=4, ensure_ascii=False)
         elif file_type == "csv":
             with open(
                 full_file_path, "w", newline="", encoding="utf-8"
             ) as file:
                 writer = csv.writer(file)
-                writer.writerow(
-                    [
-                        "input",
-                        "actual_output",
-                        "expected_output",
-                        "context",
-                        "source_file",
-                    ]
-                )
-                for golden in self.synthetic_goldens:
+                if (
+                    self.synthetic_goldens is not None
+                    and len(self.synthetic_goldens) > 0
+                ):
                     writer.writerow(
                         [
-                            golden.input,
-                            golden.actual_output,
-                            golden.expected_output,
-                            "|".join(golden.context),
-                            golden.source_file,
+                            "input",
+                            "actual_output",
+                            "expected_output",
+                            "context",
+                            "source_file",
                         ]
                     )
+                    for golden in self.synthetic_goldens:
+                        writer.writerow(
+                            [
+                                golden.input,
+                                golden.actual_output,
+                                golden.expected_output,
+                                "|".join(golden.context),
+                                golden.source_file,
+                            ]
+                        )
+                else:
+                    writer.writerow(
+                        [
+                            "scenario",
+                            "expected_outcome",
+                            "context",
+                            "source_files",
+                        ]
+                    )
+                    for golden in self.synthetic_conversational_goldens:
+                        writer.writerow(
+                            [
+                                golden.scenario,
+                                golden.expected_outcome,
+                                "|".join(golden.context),
+                                golden.additional_metadata.get(
+                                    "source_files", None
+                                ),
+                            ]
+                        )
         elif file_type == "jsonl":
             with open(full_file_path, "w", encoding="utf-8") as file:
-                for golden in self.synthetic_goldens:
-                    record = {
-                        "input": golden.input,
-                        "actual_output": golden.actual_output,
-                        "expected_output": golden.expected_output,
-                        "context": golden.context,
-                        "source_file": golden.source_file,
-                    }
-                    file.write(json.dumps(record, ensure_ascii=False) + "\n")
+                if (
+                    self.synthetic_goldens is not None
+                    and len(self.synthetic_goldens) > 0
+                ):
+                    for golden in self.synthetic_goldens:
+                        record = {
+                            "input": golden.input,
+                            "actual_output": golden.actual_output,
+                            "expected_output": golden.expected_output,
+                            "context": golden.context,
+                            "source_file": golden.source_file,
+                        }
+                        file.write(
+                            json.dumps(record, ensure_ascii=False) + "\n"
+                        )
+                else:
+                    for golden in self.synthetic_conversational_goldens:
+                        record = {
+                            "scenario": golden.scenario,
+                            "expected_outcome": golden.expected_outcome,
+                            "context": golden.context,
+                            "source_files": golden.additional_metadata.get(
+                                "source_files", None
+                            ),
+                        }
+                        file.write(
+                            json.dumps(record, ensure_ascii=False) + "\n"
+                        )
         if not quiet:
             print(f"Synthetic goldens saved at {full_file_path}!")
 
@@ -1637,7 +1752,7 @@ class Synthesizer:
                 )
                 if self.cost_tracking and self.using_native_model:
                     print(f"💰 API cost: {self.synthesis_cost:.6f}")
-                if _send_data == True:
+                if _send_data:
                     pass
                 remove_pbars(
                     progress,
@@ -1949,7 +2064,7 @@ class Synthesizer:
                 # Remove pbar if not from docs
                 remove_pbars(progress, [pbar_id]) if _progress is None else None
 
-        if _send_data == True:
+        if _send_data:
             pass
         if _reset_cost and self.cost_tracking and self.using_native_model:
             print(f"💰 API cost: {self.synthesis_cost:.6f}")
@@ -1970,7 +2085,8 @@ class Synthesizer:
         if _reset_cost:
             self.synthetic_conversational_goldens = []
             self.synthesis_cost = 0 if self.using_native_model else None
-        semaphore = asyncio.Semaphore(self.max_concurrent)
+        context_semaphore = asyncio.Semaphore(self.max_concurrent)
+        worker_semaphore = asyncio.Semaphore(self.max_concurrent)
         goldens: List[ConversationalGolden] = []
 
         with synthesizer_progress_context(
@@ -1989,9 +2105,9 @@ class Synthesizer:
         ):
             tasks = [
                 self.task_wrapper(
-                    semaphore,
+                    context_semaphore,
                     self._a_generate_conversational_from_context,
-                    semaphore=semaphore,
+                    semaphore=worker_semaphore,
                     context=context,
                     goldens=goldens,
                     include_expected_outcome=include_expected_outcome,
@@ -2335,7 +2451,7 @@ class Synthesizer:
 
         # Wrap up Synthesis
         self.synthetic_conversational_goldens.extend(goldens)
-        if _send_data == True:
+        if _send_data:
             pass
         return goldens
 
@@ -2567,7 +2683,7 @@ class Synthesizer:
                 contexts.append(golden.context)
 
             # Extract styles from conversational goldens if not already set
-            if self.set_conversational_styling_config == False:
+            if not self.set_conversational_styling_config:
                 example_scenarios = random.sample(
                     [golden.scenario for golden in goldens],
                     min(len(goldens), 10),
@@ -2612,7 +2728,7 @@ class Synthesizer:
             contexts.append(golden.context)
 
         # Extract styles from conversational goldens if not already set
-        if self.set_conversational_styling_config == False:
+        if not self.set_conversational_styling_config:
             example_scenarios = random.sample(
                 [golden.scenario for golden in goldens], min(len(goldens), 10)
             )

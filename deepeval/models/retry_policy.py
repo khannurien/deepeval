@@ -55,6 +55,7 @@ from tenacity.stop import stop_base
 from tenacity.wait import wait_base
 from contextvars import ContextVar, copy_context
 
+from deepeval.utils import require_dependency
 from deepeval.constants import (
     ProviderSlug as PS,
     slugify,
@@ -86,6 +87,8 @@ def set_outer_deadline(seconds: float | None):
         call, which must be passed to `reset_outer_deadline` to restore the
         previous value.
     """
+    if get_settings().DEEPEVAL_DISABLE_TIMEOUTS:
+        return _OUTER_DEADLINE.set(None)
     if seconds and seconds > 0:
         return _OUTER_DEADLINE.set(time.monotonic() + seconds)
     return _OUTER_DEADLINE.set(None)
@@ -130,11 +133,10 @@ def resolve_effective_attempt_timeout():
         float: Seconds to use for the inner per-attempt timeout. `0` means
         disable inner timeout and rely on the outer budget instead.
     """
-    per_attempt = float(
-        get_settings().DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS or 0
-    )
+    settings = get_settings()
+    per_attempt = float(settings.DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS or 0)
     # 0 or None disable inner wait_for. That means rely on outer task cap for timeouts instead.
-    if per_attempt <= 0:
+    if settings.DEEPEVAL_DISABLE_TIMEOUTS or per_attempt <= 0:
         return 0
     # If we do have a positive per-attempt, use up to remaining outer budget.
     rem = _remaining_budget()
@@ -556,7 +558,11 @@ def run_sync_with_timeout(func, timeout_seconds, *args, **kwargs):
         BaseException: If `func` raises, the same exception is re-raised with its
                        original traceback.
     """
-    if not timeout_seconds or timeout_seconds <= 0:
+    if (
+        get_settings().DEEPEVAL_DISABLE_TIMEOUTS
+        or not timeout_seconds
+        or timeout_seconds <= 0
+    ):
         return func(*args, **kwargs)
 
     # try to respect the global cap on concurrent timeout workers
@@ -766,6 +772,7 @@ AZURE_OPENAI_ERROR_POLICY = OPENAI_ERROR_POLICY
 DEEPSEEK_ERROR_POLICY = OPENAI_ERROR_POLICY
 KIMI_ERROR_POLICY = OPENAI_ERROR_POLICY
 LOCAL_ERROR_POLICY = OPENAI_ERROR_POLICY
+OPENROUTER_ERROR_POLICY = OPENAI_ERROR_POLICY
 
 ######################
 # AWS Bedrock Policy #
@@ -829,25 +836,23 @@ try:
 except Exception:  # botocore not present (aiobotocore optional)
     BEDROCK_ERROR_POLICY = None
 
-
 ####################
 # Anthropic Policy #
 ####################
 
 try:
-    from anthropic import (
-        AuthenticationError,
-        RateLimitError,
-        APIConnectionError,
-        APITimeoutError,
-        APIStatusError,
+
+    module = require_dependency(
+        "anthropic",
+        provider_label="retry_policy",
+        install_hint="Install it with `pip install anthropic`.",
     )
 
     ANTHROPIC_ERROR_POLICY = ErrorPolicy(
-        auth_excs=(AuthenticationError,),
-        rate_limit_excs=(RateLimitError,),
-        network_excs=(APIConnectionError, APITimeoutError),
-        http_excs=(APIStatusError,),
+        auth_excs=(module.AuthenticationError,),
+        rate_limit_excs=(module.RateLimitError,),
+        network_excs=(module.APIConnectionError, module.APITimeoutError),
+        http_excs=(module.APIStatusError,),
         non_retryable_codes=frozenset(),  # update if we learn of hard quota codes
         message_markers={},
     )
@@ -868,7 +873,11 @@ except Exception:  # Anthropic optional
 # and gate retries using message markers (code sniffing).
 # See: https://github.com/googleapis/python-genai?tab=readme-ov-file#error-handling
 try:
-    from google.genai import errors as gerrors
+    module = require_dependency(
+        "google.genai",
+        provider_label="retry_policy",
+        install_hint="Install it with `pip install google-genai`.",
+    )
 
     _HTTPX_NET_EXCS = _httpx_net_excs()
     _REQUESTS_EXCS = _requests_net_excs()
@@ -887,9 +896,9 @@ try:
     GOOGLE_ERROR_POLICY = ErrorPolicy(
         auth_excs=(),  # we will classify 401/403 via markers below (see non-retryable codes)
         rate_limit_excs=(
-            gerrors.ClientError,
+            module.gerrors.ClientError,
         ),  # includes 429; markers decide retry vs not
-        network_excs=(gerrors.ServerError,)
+        network_excs=(module.gerrors.ServerError,)
         + _HTTPX_NET_EXCS
         + _REQUESTS_EXCS,  # treat 5xx as transient
         http_excs=(),  # no reliable .status_code on exceptions; handled above
@@ -990,6 +999,7 @@ _POLICY_BY_SLUG: dict[str, Optional[ErrorPolicy]] = {
     PS.LITELLM.value: LITELLM_ERROR_POLICY,
     PS.LOCAL.value: LOCAL_ERROR_POLICY,
     PS.OLLAMA.value: OLLAMA_ERROR_POLICY,
+    PS.OPENROUTER.value: OPENROUTER_ERROR_POLICY,
 }
 
 
@@ -1011,6 +1021,7 @@ _STATIC_PRED_BY_SLUG: dict[str, Optional[Callable[[Exception], bool]]] = {
     PS.LITELLM.value: _opt_pred(LITELLM_ERROR_POLICY),
     PS.LOCAL.value: _opt_pred(LOCAL_ERROR_POLICY),
     PS.OLLAMA.value: _opt_pred(OLLAMA_ERROR_POLICY),
+    PS.OPENROUTER.value: _opt_pred(OPENROUTER_ERROR_POLICY),
 }
 
 

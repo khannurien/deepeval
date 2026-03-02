@@ -6,6 +6,8 @@ sidebar_label: AI Agent Evaluation
 
 import VideoDisplayer from "@site/src/components/VideoDisplayer";
 
+**AI agent evaluation** is the process of measuring how well an agent reasons, selects and calls tools, and completes tasks—separately at each layer—so you can pinpoint exactly what's broken. But first, what is an AI agent?
+
 An AI agent is an LLM-powered system that autonomously reasons about tasks, creates plans, and executes actions using external tools to accomplish user goals. Unlike simple LLM applications that respond to single prompts, agents operate in loops—reasoning, acting, observing results, and adapting their approach until the task is complete.
 
 :::info
@@ -13,6 +15,8 @@ AI agents consist of two layers: the **reasoning layer** (powered by LLMs) handl
 :::
 
 Since a successful agent outcome depends entirely on the quality of both reasoning and action, AI agent evaluation focuses on evaluating these layers separately. This allows for easier debugging and to pinpoint issues at the **component-level.**
+
+_For a comprehensive breakdown of each agentic metric, see the [AI Agent Evaluation Metrics guide](/guides/guides-ai-agent-evaluation-metrics)._
 
 ## Common Pitfalls in AI Agent Pipelines
 
@@ -515,7 +519,8 @@ While `deepeval` handles the metrics and evaluation logic, [Confident AI](https:
 Ready to get started? Here's what to do next:
 
 1. **Login to Confident AI** — Run `deepeval login` in your terminal to connect your account
-2. **Read the full guide** — For a deeper dive into single-turn vs multi-turn agents, common misconceptions, and best practices, check out [AI Agent Evaluation: The Definitive Guide](https://www.confident-ai.com/blog/definitive-ai-agent-evaluation-guide)
-3. **Join the community** — Have questions? Join the [DeepEval Discord](https://discord.com/invite/a3K9c8GRGt)—we're happy to help!
+2. **Explore the metrics** — Learn how each metric works, including calculation formulas and configuration options, in the [AI Agent Evaluation Metrics guide](/guides/guides-ai-agent-evaluation-metrics)
+3. **Read the full guide** — For a deeper dive into single-turn vs multi-turn agents, common misconceptions, and best practices, check out [AI Agent Evaluation: The Definitive Guide](https://www.confident-ai.com/blog/definitive-ai-agent-evaluation-guide)
+4. **Join the community** — Have questions? Join the [DeepEval Discord](https://discord.com/invite/a3K9c8GRGt)—we're happy to help!
 
 **Congratulations 🎉!** You now have the knowledge to build robust evaluation pipelines for your AI agents.

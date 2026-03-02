@@ -5,7 +5,7 @@ import deepeval.models.llms.azure_model as azure_mod
 from unittest.mock import Mock, patch
 from pydantic import BaseModel, SecretStr
 import pytest
-from deepeval.config.settings import get_settings, reset_settings
+from deepeval.config.settings import reset_settings
 from deepeval.models.llms.azure_model import AzureOpenAIModel
 from tests.test_core.stubs import _RecordingClient
 
@@ -26,8 +26,10 @@ class TestAzureOpenAIModelGenerationKwargs:
             settings.AZURE_OPENAI_API_KEY = "test-key"
             settings.AZURE_OPENAI_ENDPOINT = "http://test-endpoint"
             settings.AZURE_DEPLOYMENT_NAME = "test-deployment"
-            settings.AZURE_MODEL_NAME = "gpt-4"
+            settings.AZURE_MODEL_NAME = "gpt-4.1"
             settings.OPENAI_API_VERSION = "2024-02-15-preview"
+            settings.OPENAI_COST_PER_INPUT_TOKEN = 1e-6
+            settings.OPENAI_COST_PER_OUTPUT_TOKEN = 1e-6
 
         model = AzureOpenAIModel()
         assert model.generation_kwargs == {}
@@ -39,7 +41,7 @@ class TestAzureOpenAIModelGenerationKwargs:
             settings.AZURE_OPENAI_API_KEY = "test-key"
             settings.AZURE_OPENAI_ENDPOINT = "http://test-endpoint"
             settings.AZURE_DEPLOYMENT_NAME = "test-deployment"
-            settings.AZURE_MODEL_NAME = "gpt-4"
+            settings.AZURE_MODEL_NAME = "gpt-4.1"
             settings.OPENAI_API_VERSION = "2024-02-15-preview"
 
         generation_kwargs = {
@@ -58,7 +60,7 @@ class TestAzureOpenAIModelGenerationKwargs:
             settings.AZURE_OPENAI_API_KEY = "test-key"
             settings.AZURE_OPENAI_ENDPOINT = "http://test-endpoint"
             settings.AZURE_DEPLOYMENT_NAME = "test-deployment"
-            settings.AZURE_MODEL_NAME = "gpt-4"
+            settings.AZURE_MODEL_NAME = "gpt-4.1"
             settings.OPENAI_API_VERSION = "2024-02-15-preview"
 
         generation_kwargs = {"max_tokens": 500}
@@ -85,10 +87,10 @@ class TestAzureOpenAIModelGenerationKwargs:
         # Create model with explicit deployment_name
         model = AzureOpenAIModel(
             deployment_name="test-deployment",
-            model_name="gpt-4",
-            azure_openai_api_key="test-key",
-            azure_endpoint="test-endpoint",
-            openai_api_version="2024-02-15-preview",
+            model="gpt-4.1",
+            api_key="test-key",
+            base_url="test-endpoint",
+            api_version="2024-02-15-preview",
             generation_kwargs={"max_tokens": 1000, "top_p": 0.9},
         )
 
@@ -98,7 +100,12 @@ class TestAzureOpenAIModelGenerationKwargs:
         # Verify the completion was called with generation_kwargs
         mock_client.chat.completions.create.assert_called_once_with(
             model="test-deployment",
-            messages=[{"role": "user", "content": "test prompt"}],
+            messages=[
+                {
+                    "role": "user",
+                    "content": [{"type": "text", "text": "test prompt"}],
+                }
+            ],
             temperature=0,
             max_tokens=1000,
             top_p=0.9,
@@ -120,10 +127,10 @@ class TestAzureOpenAIModelGenerationKwargs:
         # Create model with explicit deployment_name
         model = AzureOpenAIModel(
             deployment_name="test-deployment",
-            model_name="gpt-4",
-            azure_openai_api_key="test-key",
-            azure_endpoint="test-endpoint",
-            openai_api_version="2024-02-15-preview",
+            model="gpt-4.1",
+            api_key="test-key",
+            base_url="test-endpoint",
+            api_version="2024-02-15-preview",
         )
 
         # Call generate without generation_kwargs
@@ -132,7 +139,12 @@ class TestAzureOpenAIModelGenerationKwargs:
         # Verify the completion was called without extra kwargs
         mock_client.chat.completions.create.assert_called_once_with(
             model="test-deployment",
-            messages=[{"role": "user", "content": "test prompt"}],
+            messages=[
+                {
+                    "role": "user",
+                    "content": [{"type": "text", "text": "test prompt"}],
+                }
+            ],
             temperature=0,
         )
         assert output == "test response"
@@ -145,10 +157,10 @@ class TestAzureOpenAIModelGenerationKwargs:
 
         model = AzureOpenAIModel(
             deployment_name="test-deployment",
-            model_name="gpt-4",
-            azure_openai_api_key="test-key",
-            azure_endpoint="test-endpoint",
-            openai_api_version="2024-02-15-preview",
+            model="gpt-4.1",
+            api_key="test-key",
+            base_url="test-endpoint",
+            api_version="2024-02-15-preview",
             timeout=30,
             max_retries=5,  # user-provided, but we should override it to 0
         )
@@ -171,7 +183,7 @@ class TestAzureOpenAIModelGenerationKwargs:
             settings.AZURE_OPENAI_API_KEY = "test-key"
             settings.AZURE_OPENAI_ENDPOINT = "http://test-endpoint"
             settings.AZURE_DEPLOYMENT_NAME = "test-deployment"
-            settings.AZURE_MODEL_NAME = "gpt-4"
+            settings.AZURE_MODEL_NAME = "gpt-4.1"
             settings.OPENAI_API_VERSION = "2024-02-15-preview"
 
         # This should work exactly as before
@@ -186,7 +198,7 @@ class TestAzureOpenAIModelGenerationKwargs:
             settings.AZURE_OPENAI_API_KEY = "test-key"
             settings.AZURE_OPENAI_ENDPOINT = "http://test-endpoint"
             settings.AZURE_DEPLOYMENT_NAME = "test-deployment"
-            settings.AZURE_MODEL_NAME = "gpt-4"
+            settings.AZURE_MODEL_NAME = "gpt-4.1"
             settings.OPENAI_API_VERSION = "2024-02-15-preview"
 
         model = AzureOpenAIModel(generation_kwargs={})
@@ -198,7 +210,7 @@ class TestAzureOpenAIModelGenerationKwargs:
             settings.AZURE_OPENAI_API_KEY = "test-key"
             settings.AZURE_OPENAI_ENDPOINT = "http://test-endpoint"
             settings.AZURE_DEPLOYMENT_NAME = "test-deployment"
-            settings.AZURE_MODEL_NAME = "gpt-4"
+            settings.AZURE_MODEL_NAME = "gpt-4.1"
             settings.OPENAI_API_VERSION = "2024-02-15-preview"
 
         model = AzureOpenAIModel(generation_kwargs=None)
@@ -211,14 +223,16 @@ class TestAzureOpenAIModelGenerationKwargs:
 
 
 def test_azure_openai_model_uses_explicit_key_over_settings_and_strips_secret(
-    monkeypatch,
+    monkeypatch, settings
 ):
-    # Put AZURE_OPENAI_API_KEY into the process env so Settings sees it
-    monkeypatch.setenv("AZURE_OPENAI_API_KEY", "env-secret-key")
-
-    # rebuild the Settings singleton from the current env
-    reset_settings(reload_dotenv=False)
-    settings = get_settings()
+    # Put Azure config into the process env so Settings sees it
+    with settings.edit(persist=False):
+        settings.AZURE_OPENAI_API_KEY = "env-secret-key"
+        settings.AZURE_DEPLOYMENT_NAME = "dummy-deployment"
+        settings.AZURE_OPENAI_ENDPOINT = (
+            "https://example-resource.openai.azure.com"
+        )
+        settings.OPENAI_API_VERSION = "2024-02-01"
 
     # Sanity check: Settings should expose this as a SecretStr
     assert isinstance(settings.AZURE_OPENAI_API_KEY, SecretStr)
@@ -234,7 +248,7 @@ def test_azure_openai_model_uses_explicit_key_over_settings_and_strips_secret(
     # Construct the model with an explicit key
     model = AzureOpenAIModel(
         model="gpt-4.1",
-        azure_openai_api_key="constructor-key",
+        api_key="constructor-key",
     )
 
     # DeepEvalBaseLLM.__init__ stores the client on `model.model`
@@ -245,17 +259,16 @@ def test_azure_openai_model_uses_explicit_key_over_settings_and_strips_secret(
     assert api_key == "constructor-key"
 
 
-def test_azure_openai_model_defaults_from_settings(monkeypatch):
+def test_azure_openai_model_defaults_from_settings(monkeypatch, settings):
     # Seed env so Settings picks up all Azure-related values
-    monkeypatch.setenv("AZURE_OPENAI_API_KEY", "env-secret-key")
-    monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "https://azure.example.com")
-    monkeypatch.setenv("AZURE_DEPLOYMENT_NAME", "settings-deployment")
-    monkeypatch.setenv("AZURE_MODEL_NAME", "settings-model")
-    monkeypatch.setenv("OPENAI_API_VERSION", "2024-02-15-preview")
-
-    # Rebuild settings from env
-    reset_settings(reload_dotenv=False)
-    settings = get_settings()
+    with settings.edit(persist=False):
+        settings.AZURE_OPENAI_API_KEY = "env-secret-key"
+        settings.AZURE_OPENAI_ENDPOINT = "https://azure.example.com"
+        settings.AZURE_DEPLOYMENT_NAME = "settings-deployment"
+        settings.AZURE_MODEL_NAME = "settings-model"
+        settings.OPENAI_API_VERSION = "2024-02-15-preview"
+        settings.OPENAI_COST_PER_INPUT_TOKEN = 1e-6
+        settings.OPENAI_COST_PER_OUTPUT_TOKEN = 1e-6
 
     # Sanity: API key should be a SecretStr on the settings object
     assert isinstance(settings.AZURE_OPENAI_API_KEY, SecretStr)
@@ -284,16 +297,19 @@ def test_azure_openai_model_defaults_from_settings(monkeypatch):
     assert kw.get("api_version") == "2024-02-15-preview"
 
     # Model name should also come from Settings
-    assert model.model_name == "settings-model"
+    assert model.name == "settings-model"
 
 
-def test_azure_openai_model_ctor_args_override_settings(monkeypatch):
+def test_azure_openai_model_ctor_args_override_settings(monkeypatch, settings):
     # Baseline Settings values
-    monkeypatch.setenv("AZURE_OPENAI_API_KEY", "settings-secret-key")
-    monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "https://settings-endpoint")
-    monkeypatch.setenv("AZURE_DEPLOYMENT_NAME", "settings-deployment")
-    monkeypatch.setenv("AZURE_MODEL_NAME", "settings-model")
-    monkeypatch.setenv("OPENAI_API_VERSION", "2024-02-15-preview")
+    with settings.edit(persist=False):
+        settings.AZURE_OPENAI_API_KEY = "env-secret-key"
+        settings.AZURE_OPENAI_ENDPOINT = "https://azure.example.com"
+        settings.AZURE_DEPLOYMENT_NAME = "settings-deployment"
+        settings.AZURE_MODEL_NAME = "settings-model"
+        settings.OPENAI_API_VERSION = "2024-02-15-preview"
+        settings.OPENAI_COST_PER_INPUT_TOKEN = 1e-6
+        settings.OPENAI_COST_PER_OUTPUT_TOKEN = 1e-6
 
     reset_settings(reload_dotenv=False)
 
@@ -308,10 +324,10 @@ def test_azure_openai_model_ctor_args_override_settings(monkeypatch):
     # Explicit ctor args should override everything from Settings
     model = AzureOpenAIModel(
         deployment_name="ctor-deployment",
-        model_name="ctor-model",
-        azure_openai_api_key="ctor-secret-key",
-        openai_api_version="2099-01-01-preview",
-        azure_endpoint="https://ctor-endpoint",
+        model="ctor-model",
+        api_key="ctor-secret-key",
+        api_version="2099-01-01-preview",
+        base_url="https://ctor-endpoint",
     )
 
     client = model.model
@@ -326,7 +342,122 @@ def test_azure_openai_model_ctor_args_override_settings(monkeypatch):
     assert kw.get("api_version") == "2099-01-01-preview"
 
     # Model name should match ctor value
-    assert model.model_name == "ctor-model"
+    assert model.name == "ctor-model"
+
+
+########################################################
+# Legacy keyword backwards compatibility behavior      #
+########################################################
+
+
+def test_azure_openai_model_accepts_legacy_azure_endpoint_keyword_and_maps_to_base_url(
+    settings,
+):
+    """
+    Using the legacy `model` keyword should still work:
+    - It should populate `model`
+    - It should not be forwarded through `model.kwargs`
+    """
+    with settings.edit(persist=False):
+        settings.AZURE_MODEL_NAME = "gpt-4.1"
+        settings.AZURE_OPENAI_API_KEY = "env-secret-key"
+        settings.AZURE_DEPLOYMENT_NAME = "dummy-deployment"
+        settings.AZURE_OPENAI_ENDPOINT = (
+            "https://example-resource.openai.azure.com"
+        )
+        settings.OPENAI_API_VERSION = "4.1"
+
+    model = AzureOpenAIModel(base_url="https://example.com")
+
+    # legacy keyword mapped to canonical parameter
+    assert model.base_url == "https://example.com"
+
+    # legacy key should not be forwarded to the client kwargs
+    assert "azure_endpoint" not in model.kwargs
+
+
+def test_azure_openai_model_accepts_legacy_api_key_keyword_and_uses_it(
+    monkeypatch, settings
+):
+    """
+    Using the legacy `azure_openai_api_key` keyword should:
+    - Populate the canonical `api_key` (via SecretStr)
+    - Result in the underlying client receiving the correct `api_key` value
+    - Not forward `azure_openai_api_key` in model.kwargs
+    """
+    # Put AZURE_OPENAI_API_KEY into the process env so Settings sees it
+    with settings.edit(persist=False):
+        settings.AZURE_MODEL_NAME = "gpt-4.1"
+        settings.AZURE_OPENAI_API_KEY = "env-secret-key"
+        settings.AZURE_DEPLOYMENT_NAME = "dummy-deployment"
+        settings.AZURE_OPENAI_ENDPOINT = (
+            "https://example-resource.openai.azure.com"
+        )
+        settings.OPENAI_API_VERSION = "4.1"
+        settings.OPENAI_COST_PER_INPUT_TOKEN = 1e-6
+        settings.OPENAI_COST_PER_OUTPUT_TOKEN = 1e-6
+
+    assert isinstance(settings.AZURE_OPENAI_API_KEY, SecretStr)
+
+    # Stub the Azure SDK clients so we don't make any real calls
+    monkeypatch.setattr(
+        azure_mod, "AzureOpenAI", _RecordingClient, raising=True
+    )
+    monkeypatch.setattr(
+        azure_mod, "AsyncAzureOpenAI", _RecordingClient, raising=True
+    )
+
+    # Construct AzureOpenAIModel with the legacy key name
+    model = AzureOpenAIModel(
+        model="claude-3-7-sonnet-latest",
+        api_key="constructor-key",
+    )
+
+    # DeepEvalBaseLLM.__init__ stores the client on `model.model`
+    client = model.model
+    api_key = client.kwargs.get("api_key")
+
+    # The client should see a plain string API key coming from the legacy param
+    assert isinstance(api_key, str)
+    assert api_key == "constructor-key"
+
+    # And the legacy key should not be present in the model's kwargs
+    assert "azure_openai_api_key" not in model.kwargs
+
+
+_AZURE_KWARGS = dict(
+    api_key="fake-key",
+    base_url="https://fake.openai.azure.com",
+    deployment_name="fake-deployment",
+    api_version="2024-02-01",
+)
+
+
+class TestAzureModelTemperature:
+    def test_reasoning_model_temperature_is_none(self):
+        """o3-mini has supports_temperature=False; temperature must be None."""
+        model = AzureOpenAIModel(model="o3-mini", **_AZURE_KWARGS)
+        assert model.temperature is None
+
+    def test_standard_model_temperature_is_set(self):
+        """gpt-4o supports temperature; it should default to 0.0."""
+        model = AzureOpenAIModel(model="gpt-4o", **_AZURE_KWARGS)
+        assert model.temperature is not None
+        assert model.temperature == 0.0
+
+    def test_explicit_temperature_preserved_for_standard_model(self):
+        """User-supplied temperature is kept for models that support it."""
+        model = AzureOpenAIModel(
+            model="gpt-4o", temperature=0.7, **_AZURE_KWARGS
+        )
+        assert model.temperature == pytest.approx(0.7)
+
+    def test_explicit_temperature_overridden_for_reasoning_model(self):
+        """Even if user passes temperature, reasoning models get None."""
+        model = AzureOpenAIModel(
+            model="o3-mini", temperature=0.5, **_AZURE_KWARGS
+        )
+        assert model.temperature is None
 
 
 if __name__ == "__main__":

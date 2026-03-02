@@ -1,24 +1,24 @@
+import asyncio
+import logging
+import sys
+import time
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from contextlib import contextmanager
-import sys
 from typing import List, Optional, Union
-import time
-import asyncio
 
 from deepeval.errors import MissingTestCaseParamsError
 from deepeval.metrics import (
     BaseMetric,
     BaseConversationalMetric,
-    BaseMultimodalMetric,
     BaseArenaMetric,
 )
-from deepeval.test_case import LLMTestCase, ConversationalTestCase, MLLMTestCase
+from deepeval.test_case import LLMTestCase, ConversationalTestCase
 from deepeval.test_run.cache import CachedTestCase, Cache
 from deepeval.telemetry import capture_metric_type
 from deepeval.utils import update_pbar
+from deepeval.config.settings import get_settings
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -74,8 +74,8 @@ def metric_progress_indicator(
 async def measure_metric_task(
     task_id,
     progress,
-    metric: Union[BaseMetric, BaseMultimodalMetric, BaseConversationalMetric],
-    test_case: Union[LLMTestCase, MLLMTestCase, ConversationalTestCase],
+    metric: Union[BaseMetric, BaseConversationalMetric],
+    test_case: Union[LLMTestCase, LLMTestCase, ConversationalTestCase],
     cached_test_case: Union[CachedTestCase, None],
     ignore_errors: bool,
     skip_on_missing_params: bool,
@@ -156,10 +156,8 @@ async def measure_metric_task(
 
 
 async def measure_metrics_with_indicator(
-    metrics: List[
-        Union[BaseMetric, BaseMultimodalMetric, BaseConversationalMetric]
-    ],
-    test_case: Union[LLMTestCase, MLLMTestCase, ConversationalTestCase],
+    metrics: List[Union[BaseMetric, BaseConversationalMetric]],
+    test_case: Union[LLMTestCase, LLMTestCase, ConversationalTestCase],
     cached_test_case: Union[CachedTestCase, None],
     ignore_errors: bool,
     skip_on_missing_params: bool,
@@ -238,8 +236,8 @@ async def measure_metrics_with_indicator(
 
 
 async def safe_a_measure(
-    metric: Union[BaseMetric, BaseMultimodalMetric, BaseConversationalMetric],
-    tc: Union[LLMTestCase, MLLMTestCase, ConversationalTestCase],
+    metric: Union[BaseMetric, BaseConversationalMetric],
+    tc: Union[LLMTestCase, LLMTestCase, ConversationalTestCase],
     ignore_errors: bool,
     skip_on_missing_params: bool,
     progress: Optional[Progress] = None,
@@ -263,6 +261,9 @@ async def safe_a_measure(
             "Timed out/cancelled while evaluating metric. "
             "Increase DEEPEVAL_PER_TASK_TIMEOUT_SECONDS_OVERRIDE or set "
             "DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
+            if not get_settings().DEEPEVAL_DISABLE_TIMEOUTS
+            else "Cancelled while evaluating metric (DeepEval timeouts are disabled; this likely came from upstream orchestration or the provider/network layer). "
+            "Set DEEPEVAL_LOG_STACK_TRACES=1 for full traceback."
         )
         metric.success = False
 

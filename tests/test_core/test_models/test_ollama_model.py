@@ -1,12 +1,13 @@
 from unittest.mock import patch
 
-from deepeval.config.settings import get_settings, reset_settings
+from deepeval.config.settings import reset_settings
 from deepeval.models.llms.ollama_model import OllamaModel
+from tests.test_core.stubs import _RecordingClient, make_fake_ollama_module
 
 
-@patch("deepeval.models.llms.ollama_model.Client")
+@patch("deepeval.models.llms.ollama_model.require_dependency")
 def test_ollama_model_uses_explicit_model_and_base_url_over_settings(
-    mock_client_cls,
+    mock_require_dep, settings
 ):
     """
     Explicit ctor `model` and `base_url` must override Settings-based
@@ -15,12 +16,15 @@ def test_ollama_model_uses_explicit_model_and_base_url_over_settings(
     """
     # Fresh Settings instance
     reset_settings(reload_dotenv=False)
-    settings = get_settings()
 
     # Seed Settings with default values that *should not* be used
     with settings.edit(persist=False):
-        settings.LOCAL_MODEL_NAME = "settings-model"
+        settings.OLLAMA_MODEL_NAME = "settings-model"
         settings.LOCAL_MODEL_BASE_URL = "http://settings-host:11434"
+
+    # Set up fake ollama module returned by require_dependency
+    fake_ollama = make_fake_ollama_module(_RecordingClient)
+    mock_require_dep.return_value = fake_ollama
 
     # Instantiate with explicit overrides
     model = OllamaModel(
@@ -29,42 +33,45 @@ def test_ollama_model_uses_explicit_model_and_base_url_over_settings(
     )
 
     # DeepEvalBaseLLM.__init__ calls load_model(), which should call Client(...)
-    mock_client_cls.assert_called_once()
-    _, kwargs = mock_client_cls.call_args
+    fake_ollama.Client.assert_called_once()
+    _, kwargs = fake_ollama.Client.call_args
 
-    # Client must see the ctor host, and model_name must be the ctor model
+    # Client must see the ctor host, and model must be the ctor model
     assert kwargs.get("host") == "http://ctor-host:11434"
-    assert model.model_name == "ctor-model"
+    assert model.name == "ctor-model"
 
 
-@patch("deepeval.models.llms.ollama_model.Client")
+@patch("deepeval.models.llms.ollama_model.require_dependency")
 def test_ollama_model_defaults_model_and_base_url_from_settings(
-    mock_client_cls,
+    mock_require_dep, settings
 ):
     """
     When no ctor `model` or `base_url` is provided, OllamaModel should
     resolve both values from the Pydantic Settings object
-    (LOCAL_MODEL_NAME, LOCAL_MODEL_BASE_URL), and construct the Client
+    (OLLAMA_MODEL_NAME, LOCAL_MODEL_BASE_URL), and construct the Client
     with that host.
     """
     # Fresh Settings instance
     reset_settings(reload_dotenv=False)
-    settings = get_settings()
 
     # Seed Settings with the values that should be used by default
     with settings.edit(persist=False):
-        settings.LOCAL_MODEL_NAME = "settings-model"
+        settings.OLLAMA_MODEL_NAME = "settings-model"
         settings.LOCAL_MODEL_BASE_URL = "http://settings-host:11434"
+
+    # Set up fake ollama module returned by require_dependency
+    fake_ollama = make_fake_ollama_module(_RecordingClient)
+    mock_require_dep.return_value = fake_ollama
 
     # No ctor overrides: everything should come from Settings
     model = OllamaModel()
 
     # DeepEvalBaseLLM.__init__ calls load_model(), which should call Client(...)
-    mock_client_cls.assert_called_once()
-    _, kwargs = mock_client_cls.call_args
+    fake_ollama.Client.assert_called_once()
+    _, kwargs = fake_ollama.Client.call_args
 
     # Model name and host must match the Settings values (ignoring trailing slash normalization)
-    assert model.model_name == "settings-model"
+    assert model.name == "settings-model"
     host = kwargs.get("host")
     assert host is not None
     assert host.rstrip("/") == "http://settings-host:11434"

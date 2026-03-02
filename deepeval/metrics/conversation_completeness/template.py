@@ -2,10 +2,20 @@ from typing import List, Dict
 
 
 class ConversationCompletenessTemplate:
+    multimodal_rules = """
+        --- MULTIMODAL INPUT RULES ---
+        - Treat image content as factual evidence.
+        - Only reference visual details that are explicitly and clearly visible.
+        - Do not infer or guess objects, text, or details not visibly present.
+        - If an image is unclear or ambiguous, mark uncertainty explicitly.
+    """
+
     @staticmethod
-    def extract_user_intentions(turns: List[Dict]):
+    def extract_user_intentions(turns: List[Dict], multimodal: bool = False):
         return f"""Based on the given list of message exchanges between a user and an LLM, generate a JSON object to extract all user intentions in the conversation. The JSON will have 1 field: 'intentions'.
 You should ONLY consider the overall intention, and not dwell too much on the specifics, as we are more concerned about the overall objective of the conversation.
+
+{ConversationCompletenessTemplate.multimodal_rules if multimodal else ""}
 
 **
 IMPORTANT: Please make sure to only return in JSON format.
@@ -40,6 +50,7 @@ Example JSON:
 ===== END OF EXAMPLE ======
 
 The 'intentions' key must be a list of strings.
+If there are multiple individual tasks at each turn, please give the intentions separately, DON'T summarize the intentions into a single one
 **
 
 Turns:
@@ -49,8 +60,13 @@ JSON:
 """
 
     @staticmethod
-    def generate_verdicts(turns: List[Dict], intention: str):
+    def generate_verdicts(
+        turns: List[Dict], intention: str, multimodal: bool = False
+    ):
         return f"""Based on the given list of message exchanges between a user and an LLM, generate a JSON object to indicate whether given user intention was satisfied from the conversation messages. The JSON will have 2 fields: 'verdict' and 'reason'.
+
+{ConversationCompletenessTemplate.multimodal_rules if multimodal else ""}
+
 The 'verdict' key should STRICTLY be either 'yes' or 'no', which states whether the user intention was satisfied or not.
 Provide a 'reason' ONLY if the answer is 'no'.
 You MUST USE look at all messages provided in the list of messages to make an informed judgement on satisfaction.
@@ -106,8 +122,13 @@ JSON:
 """
 
     @staticmethod
-    def generate_reason(score, incompletenesses, intentions):
+    def generate_reason(
+        score, incompletenesses, intentions, multimodal: bool = False
+    ):
         return f"""Below is a list of incompletenesses drawn from some messages in a conversation, which you have minimal knowledge of. It is a list of strings explaining why an LLM 'actual_output' is incomplete to satisfy the user `input` for a particular message.
+
+{ConversationCompletenessTemplate.multimodal_rules if multimodal else ""}
+
 Given the completeness score, which is a 0-1 score indicating how incomplete the OVERALL `actual_output`s are to the user intentions found in the `input`s of a conversation (higher the better), CONCISELY summarize the incompletenesses to justify the score. 
 
 ** 

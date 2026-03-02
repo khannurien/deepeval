@@ -1,5 +1,13 @@
 from typing import List
 
+multimodal_rules = """
+    --- MULTIMODAL INPUT RULES ---
+    - Treat image content as factual evidence.
+    - Only reference visual details that are explicitly and clearly visible.
+    - Do not infer or guess objects, text, or details not visibly present.
+    - If an image is unclear or ambiguous, mark uncertainty explicitly.
+"""
+
 
 class VerdictNodeTemplate:
     @staticmethod
@@ -34,6 +42,8 @@ class TaskNodeTemplate:
     def generate_task_output(instructions: str, text: str):
         return f"""Given the following instructions, generate an output.
 
+{multimodal_rules}
+
 {instructions}
 
 {text}
@@ -57,14 +67,16 @@ class BinaryJudgementTemplate:
     def generate_binary_verdict(criteria: str, text: str):
         return f"""{criteria}
 
+{multimodal_rules}
+
 {text}
 
 **
-IMPORTANT: Please make sure to only return a json with two keys: `verdict` (True or False), and the 'reason' key providing the reason. The verdict must be a boolean only, either True or False.
+IMPORTANT: Please make sure to only return a json with two keys: `verdict` (true or false), and the 'reason' key providing the reason. The verdict must be a boolean only, either true or false.
 Example JSON:
 {{
     "reason": "...",
-    "verdict": True
+    "verdict": true
 }}
 **
 
@@ -78,6 +90,8 @@ class NonBinaryJudgementTemplate:
         criteria: str, text: str, options: List[str]
     ):
         return f"""{criteria}
+
+{multimodal_rules}
 
 {text}
 
