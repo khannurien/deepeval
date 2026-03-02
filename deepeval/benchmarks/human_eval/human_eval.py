@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple, Set, Union, Any
 
 from deepeval.dataset import Golden
 from deepeval.benchmarks.base_benchmark import (
@@ -200,10 +200,29 @@ class HumanEval(DeepEvalBaseBenchmark):
                 # Remove Markdown code fence from generated text
                 escaped_function = strip_code_fence(function)
                 try:
-                    secure_exec(escaped_function)
-                    secure_exec(golden.expected_output)
+                    # Combine function definition, test harness, and check call
+                    # into a single scope so the generated function is visible
+                    # to check(), and check() is actually invoked.
+                    combined_code = (
+                        escaped_function
+                        + "\n\n"
+                        + golden.expected_output
+                        + "\n\n"
+                        + f"check({task.value})"
+                    )
+                    # Expose typing symbols so models that reproduce the typed
+                    # signature from the prompt don't fail at definition time.
+                    typing_globals = {
+                        "List": List,
+                        "Dict": Dict,
+                        "Tuple": Tuple,
+                        "Optional": Optional,
+                        "Set": Set,
+                        "Union": Union,
+                        "Any": Any,
+                    }
+                    secure_exec(combined_code, global_vars=typing_globals)
                     c += 1
-                # except AssertionError as e:
                 except Exception as e:
                     pass
             self.c[task.value] = c
