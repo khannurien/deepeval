@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Tuple, Set, Union, Any
+from typing import List, Optional, Dict
 
 from deepeval.dataset import Golden
 from deepeval.benchmarks.base_benchmark import (
@@ -210,18 +210,7 @@ class HumanEval(DeepEvalBaseBenchmark):
                         + "\n\n"
                         + f"check({task.value})"
                     )
-                    # Expose typing symbols so models that reproduce the typed
-                    # signature from the prompt don't fail at definition time.
-                    typing_globals = {
-                        "List": List,
-                        "Dict": Dict,
-                        "Tuple": Tuple,
-                        "Optional": Optional,
-                        "Set": Set,
-                        "Union": Union,
-                        "Any": Any,
-                    }
-                    secure_exec(combined_code, global_vars=typing_globals)
+                    secure_exec(combined_code)
                     c += 1
                 except Exception as e:
                     pass
