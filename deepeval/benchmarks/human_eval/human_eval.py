@@ -1,3 +1,4 @@
+import signal
 from typing import List, Optional, Dict
 
 from deepeval.dataset import Golden
@@ -9,6 +10,10 @@ from deepeval.models import DeepEvalBaseLLM
 from deepeval.benchmarks.human_eval.task import HumanEvalTask
 from deepeval.benchmarks.human_eval.template import HumanEvalTemplate
 from deepeval.telemetry import capture_benchmark_run
+
+
+def _timeout_handler(signum, frame):
+    raise TimeoutError("Code execution timed out")
 
 
 def strip_code_fence(text):
@@ -210,8 +215,14 @@ class HumanEval(DeepEvalBaseBenchmark):
                         + "\n\n"
                         + f"check({task.value})"
                     )
-                    secure_exec(combined_code)
-                    c += 1
+                    # Guard against generated code with infinite loops.
+                    signal.signal(signal.SIGALRM, _timeout_handler)
+                    signal.alarm(10)
+                    try:
+                        secure_exec(combined_code)
+                        c += 1
+                    finally:
+                        signal.alarm(0)
                 except Exception as e:
                     pass
             self.c[task.value] = c
