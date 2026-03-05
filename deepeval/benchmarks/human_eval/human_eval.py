@@ -70,6 +70,20 @@ def secure_exec(code_str, global_vars=None, local_vars=None):
             "TypeError": TypeError,
             "IndexError": IndexError,
             "KeyError": KeyError,
+            "AssertionError": AssertionError,
+            "StopIteration": StopIteration,
+            "isinstance": isinstance,
+            "hasattr": hasattr,
+            "getattr": getattr,
+            "type": type,
+            "hash": hash,
+            "frozenset": frozenset,
+            "repr": repr,
+            "print": print,
+            "True": True,
+            "False": False,
+            "None": None,
+            "math": __import__("math"),
         }
     }
     safe_globals.update(global_vars)
@@ -201,6 +215,7 @@ class HumanEval(DeepEvalBaseBenchmark):
                 prompt=prompt, n=self.n, temperature=self.temperature
             )
             c = 0
+            signal.signal(signal.SIGALRM, _timeout_handler)
             for function in functions:
                 # Remove Markdown code fence from generated text
                 escaped_function = strip_code_fence(function)
@@ -216,7 +231,6 @@ class HumanEval(DeepEvalBaseBenchmark):
                         + f"check({task.value})"
                     )
                     # Guard against generated code with infinite loops.
-                    signal.signal(signal.SIGALRM, _timeout_handler)
                     signal.alarm(10)
                     try:
                         secure_exec(combined_code)
