@@ -70,7 +70,6 @@ from deepeval.tracing.types import TestCaseMetricPair
 from deepeval.tracing.api import PromptApi
 from deepeval.tracing.trace_test_manager import trace_testing_manager
 
-
 if TYPE_CHECKING:
     from deepeval.dataset.golden import Golden
     from anthropic import Anthropic
@@ -314,7 +313,8 @@ class TraceManager:
                 trace_testing_manager.test_dict = make_json_serializable(body)
             #  Post the trace to the server before removing it
             elif not self.evaluating:
-                self.post_trace(trace)
+                if not trace.drop:
+                    self.post_trace(trace)
             else:
                 if self.evaluation_loop:
                     if self.integration_traces_to_evaluate:
@@ -714,6 +714,13 @@ class TraceManager:
         while span_stack:
             span = span_stack.pop()
 
+            if span.drop:
+                if span.children:
+                    for child in span.children:
+                        child.parent_uuid = span.parent_uuid
+                    span_stack.extend(span.children)
+                continue
+
             # Convert BaseSpan to BaseApiSpan
             api_span = self._convert_span_to_api_span(span)
 
@@ -770,6 +777,7 @@ class TraceManager:
             toolsCalled=trace.tools_called,
             expectedTools=trace.expected_tools,
             testCaseId=trace.test_case_id,
+            turnId=trace.turn_id,
             confident_api_key=trace.confident_api_key,
             environment=(
                 self.environment if not trace.environment else trace.environment
@@ -947,9 +955,7 @@ class Observer:
             ):
                 self.trace_uuid = current_trace.uuid
             else:
-                trace = trace_manager.start_new_trace(
-                    metric_collection=self.metric_collection
-                )
+                trace = trace_manager.start_new_trace()
                 self.trace_uuid = trace.uuid
                 current_trace_context.set(trace)
 
@@ -1162,27 +1168,37 @@ def observe(
     type: Optional[
         Union[Literal["agent", "llm", "retriever", "tool"], str]
     ] = None,
+    _drop_if_root: bool = False,
+    _internal: bool = False,
     **observe_kwargs,
 ):
     """
     Decorator to trace a function as a span.
 
     Args:
-        span_type: The type of span to create (AGENT, LLM, RETRIEVER, TOOL, or custom string)
-        **observe_kwargs: Additional arguments to pass to the Observer
-
-    Returns:
-        A decorator function that wraps the original function with a Observer
+        type: The type of span to create (agent, llm, retriever, tool, or custom string).
+        _drop_if_root: If True, skip observation when there is no active parent span.
+        _internal: If True, only observe when CONFIDENT_TRACE_INTERNAL is enabled.
+        **observe_kwargs: Additional arguments to pass to the Observer.
     """
 
     def decorator(func):
         func_name = func.__name__  # Get func_name outside wrappers
+
+        def _should_skip_observe():
+            if _drop_if_root and current_span_context.get() is None:
+                return True
+            if _internal and not get_settings().CONFIDENT_TRACE_INTERNAL:
+                return True
+            return False
 
         # Async generator function
         if inspect.isasyncgenfunction(func):
 
             @functools.wraps(func)
             def asyncgen_wrapper(*args, **func_kwargs):
+                if _should_skip_observe():
+                    return func(*args, **func_kwargs)
 
                 sig = inspect.signature(func)
                 bound = sig.bind(*args, **func_kwargs)
@@ -1217,6 +1233,8 @@ def observe(
 
             @functools.wraps(func)
             def gen_wrapper(*args, **func_kwargs):
+                if _should_skip_observe():
+                    return func(*args, **func_kwargs)
 
                 sig = inspect.signature(func)
                 bound = sig.bind(*args, **func_kwargs)
@@ -1251,12 +1269,14 @@ def observe(
                     _span = current_span_context.get()
                     _trace = current_trace_context.get()
                     it = iter(original_gen)
+                    last_yielded_value = None
                     return_value = None
                     try:
                         while True:
                             try:
                                 # 1. Pull the next chunk
                                 value = next(it)
+                                last_yielded_value = value
                             except StopIteration as e:
                                 return_value = e.value
                                 break
@@ -1267,15 +1287,19 @@ def observe(
                             current_span_context.set(_span)
                             if _trace is not None:
                                 current_trace_context.set(_trace)
-                                
-                        observer.result = return_value
+
+                        observer.result = (
+                            return_value
+                            if return_value is not None
+                            else last_yielded_value
+                        )
                     except Exception as e:
                         current_span_context.set(_span)
                         if _trace is not None:
                             current_trace_context.set(_trace)
                         observer.__exit__(e.__class__, e, e.__traceback__)
                         raise
-                    finally: # GeneratorExit execption directly brings us to final block
+                    finally:  # GeneratorExit execption directly brings us to final block
                         observer.__exit__(None, None, None)
 
                 return gen()
@@ -1287,7 +1311,8 @@ def observe(
 
             @functools.wraps(func)
             async def async_wrapper(*args, **func_kwargs):
-                # func_name = func.__name__ # Removed from here
+                if _should_skip_observe():
+                    return await func(*args, **func_kwargs)
                 sig = inspect.signature(func)
                 bound_args = sig.bind(*args, **func_kwargs)
                 bound_args.apply_defaults()
@@ -1318,7 +1343,8 @@ def observe(
 
             @functools.wraps(func)
             def wrapper(*args, **func_kwargs):
-                # func_name = func.__name__ # Removed from here
+                if _should_skip_observe():
+                    return func(*args, **func_kwargs)
                 sig = inspect.signature(func)
                 bound_args = sig.bind(*args, **func_kwargs)
                 bound_args.apply_defaults()

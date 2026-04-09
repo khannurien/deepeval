@@ -2,7 +2,6 @@ from typing import Any, Callable, Union
 
 from deepeval.models.base_model import DeepEvalModelData
 
-
 DEFAULT_GPT_MODEL = "gpt-4.1"
 # OpenRouter uses provider/model format (e.g., "openai/gpt-4", "anthropic/claude-3-opus")
 # DeepEval does not validate OpenRouter model strings.
@@ -388,6 +387,15 @@ OPENAI_MODELS_DATA = ModelDataRegistry(
             supports_temperature=False,
             input_price=1.75 / 1e6,
             output_price=14.00 / 1e6,
+        ),
+        "gpt-5.4-mini": make_model_data(
+            supports_log_probs=False,
+            supports_multimodal=True,
+            supports_structured_outputs=True,
+            supports_json=False,
+            supports_temperature=False,
+            input_price=0.75 / 1e6,
+            output_price=4.50 / 1e6,
         ),
     }
 )

@@ -1,4 +1,5 @@
 import logging
+import math
 from typing import Optional, Any, Union, Tuple
 import aiohttp
 import requests
@@ -16,7 +17,6 @@ import deepeval
 from deepeval.key_handler import KEY_FILE_HANDLER, KeyValues
 from deepeval.confident.types import ApiResponse, ConfidentApiError
 from deepeval.config.settings import get_settings
-
 
 CONFIDENT_API_KEY_ENV_VAR = "CONFIDENT_API_KEY"
 DEEPEVAL_BASE_URL = "https://deepeval.confident-ai.com"
@@ -140,6 +140,8 @@ class Endpoints(Enum):
     PROMPTS_VERSIONS_ENDPOINT = "/v1/prompts/:alias/versions"
     PROMPTS_COMMITS_ENDPOINT = "/v1/prompts/:alias/commits"
     PROMPTS_COMMIT_HASH_ENDPOINT = "/v1/prompts/:alias/commits/:hash"
+    PROMPTS_BRANCHES_ENDPOINT = "/v1/prompts/:alias/branches"
+    PROMPTS_BRANCH_ENDPOINT = "/v1/prompts/:alias/branches/:name"
     SIMULATE_ENDPOINT = "/v1/simulate"
     EVALUATE_ENDPOINT = "/v1/evaluate"
 
@@ -148,6 +150,24 @@ class Endpoints(Enum):
     EVALUATE_SPAN_ENDPOINT = "/v1/evaluate/spans/:spanUuid"
 
     METRICS_ENDPOINT = "/v1/metrics"
+
+
+def _sanitize_body(obj):
+    """Recursively replace non-finite floats (NaN, Inf, -Inf) with None.
+
+    Python's json.dumps() happily serializes float('nan') as the
+    literal token ``NaN`` which is **not** valid JSON and causes
+    server-side parsing failures.  This helper walks any dict/list
+    structure and neutralises those values before the payload is
+    handed to the HTTP layer.
+    """
+    if isinstance(obj, float):
+        return None if not math.isfinite(obj) else obj
+    if isinstance(obj, dict):
+        return {k: _sanitize_body(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_sanitize_body(v) for v in obj]
+    return obj
 
 
 class Api:
@@ -227,6 +247,9 @@ class Api:
                 if placeholder in url:
                     url = url.replace(placeholder, str(value))
 
+        if body is not None:
+            body = _sanitize_body(body)
+
         res = self._http_request(
             method=method.value,
             url=url,
@@ -270,6 +293,9 @@ class Api:
                 placeholder = f":{key}"
                 if placeholder in url:
                     url = url.replace(placeholder, str(value))
+
+        if body is not None:
+            body = _sanitize_body(body)
 
         async with aiohttp.ClientSession() as session:
             async with session.request(

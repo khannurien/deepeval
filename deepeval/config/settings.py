@@ -51,7 +51,6 @@ from deepeval.config.utils import (
 )
 from deepeval.constants import SUPPORTED_PROVIDER_SLUGS, slugify
 
-
 logger = logging.getLogger(__name__)
 _SAVE_RE = re.compile(r"^(?P<scheme>dotenv)(?::(?P<path>.+))?$")
 
@@ -790,6 +789,10 @@ class Settings(BaseSettings):
     CONFIDENT_TRACE_SAMPLE_RATE: Optional[float] = Field(
         1.0, description="Trace sampling rate (0–1). Lower to reduce overhead."
     )
+    CONFIDENT_TRACE_INTERNAL: Optional[bool] = Field(
+        None,
+        description="Enable detailed internal tracing of metric and model methods inside @observe spans.",
+    )
 
     CONFIDENT_METRIC_LOGGING_FLUSH: Optional[bool] = Field(
         None,
@@ -990,6 +993,7 @@ class Settings(BaseSettings):
         "CONFIDENT_METRIC_LOGGING_FLUSH",
         "CONFIDENT_OPEN_BROWSER",
         "CONFIDENT_TRACE_FLUSH",
+        "CONFIDENT_TRACE_INTERNAL",
         "CONFIDENT_TRACE_VERBOSE",
         "CUDA_LAUNCH_BLOCKING",
         "DEEPEVAL_DEBUG_ASYNC",

@@ -130,6 +130,8 @@ class ConfidentInstrumentationSettings(InstrumentationSettings):
         agent_metric_collection: Optional[str] = None,
         tool_metric_collection_map: Optional[dict] = None,
         trace_metric_collection: Optional[str] = None,
+        test_case_id: Optional[str] = None,
+        turn_id: Optional[str] = None,
         is_test_mode: Optional[bool] = False,
         agent_metrics: Optional[List[BaseMetric]] = None,
     ):
@@ -160,6 +162,8 @@ class ConfidentInstrumentationSettings(InstrumentationSettings):
         self.llm_metric_collection = llm_metric_collection
         self.agent_metric_collection = agent_metric_collection
         self.trace_metric_collection = trace_metric_collection
+        self.test_case_id = test_case_id
+        self.turn_id = turn_id
         self.is_test_mode = is_test_mode
         self.agent_metrics = agent_metrics
 
@@ -208,16 +212,33 @@ class SpanInterceptor(SpanProcessor):
             _otel_trace_id = span.get_span_context().trace_id
             _current_trace_context.uuid = to_hex_string(_otel_trace_id, 32)
 
+        # per-request values from current_trace_context override settings for
+        # scalars; metadata is merged (settings as base, context on top)
+        _thread_id = (
+            _current_trace_context.thread_id if _current_trace_context else None
+        ) or self.settings.thread_id
+
+        _name = (
+            _current_trace_context.name if _current_trace_context else None
+        ) or self.settings.name
+
+        _metadata = {
+            **(self.settings.metadata or {}),
+            **(
+                _current_trace_context.metadata or {}
+                if _current_trace_context
+                else {}
+            ),
+        }
+
         # set trace attributes
-        if self.settings.thread_id:
-            span.set_attribute(
-                "confident.trace.thread_id", self.settings.thread_id
-            )
+        if _thread_id:
+            span.set_attribute("confident.trace.thread_id", _thread_id)
         if self.settings.user_id:
             span.set_attribute("confident.trace.user_id", self.settings.user_id)
-        if self.settings.metadata:
+        if _metadata:
             span.set_attribute(
-                "confident.trace.metadata", json.dumps(self.settings.metadata)
+                "confident.trace.metadata", json.dumps(_metadata)
             )
         if self.settings.tags:
             span.set_attribute("confident.trace.tags", self.settings.tags)
@@ -230,8 +251,14 @@ class SpanInterceptor(SpanProcessor):
             span.set_attribute(
                 "confident.trace.environment", self.settings.environment
             )
-        if self.settings.name:
-            span.set_attribute("confident.trace.name", self.settings.name)
+        if _name:
+            span.set_attribute("confident.trace.name", _name)
+        if self.settings.test_case_id:
+            span.set_attribute(
+                "confident.trace.test_case_id", self.settings.test_case_id
+            )
+        if self.settings.turn_id:
+            span.set_attribute("confident.trace.turn_id", self.settings.turn_id)
         if self.settings.confident_prompt:
             span.set_attribute(
                 "confident.span.prompt_alias",
