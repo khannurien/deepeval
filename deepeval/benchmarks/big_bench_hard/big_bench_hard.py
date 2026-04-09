@@ -209,7 +209,10 @@ class BigBenchHard(DeepEvalBaseBenchmark):
         pydantic_model = bbh_models_dict[task.value]
         try:
             res = model.generate(prompt=prompt, schema=pydantic_model)
-            prediction = str(res.answer)
+            if isinstance(res, (tuple, list)):
+                prediction = str(res[0].answer)
+            else:
+                prediction = str(res.answer)
         except (AttributeError, TypeError):
             prompt += self.confinement_instructions_dict[task]
             prediction = model.generate(prompt)
